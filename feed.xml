@@ -2,7 +2,7 @@
 <rss version="2.0">
     <channel>
         <title>suxin.space</title>
-        <link>https://suxin.space/notes</link>
+        <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
         <lastBuildDate>Wed, 01 May 2019 00:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
@@ -10,8 +10,8 @@
         <language>en</language>
         <item>
             <title><![CDATA[Making of this website]]></title>
-            <link>https://suxin.space/notes/about-this-website</link>
-            <guid>https://suxin.space/notes/about-this-website</guid>
+            <link>https://suxin.space/notes/about-this-website/</link>
+            <guid>https://suxin.space/notes/about-this-website/</guid>
             <pubDate>Wed, 01 May 2019 00:00:00 GMT</pubDate>
             <description><![CDATA[Thoughts on making a personal website and how it happened]]></description>
         </item>
