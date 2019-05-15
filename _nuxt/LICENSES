@@ -22,6 +22,12 @@
 	@license MIT
 	*/
 
+/*!
+ * vue-no-ssr v1.1.1
+ * (c) 2018-present egoist <0x142857@gmail.com>
+ * Released under the MIT License.
+ */
+
 /*! 
   * portal-vue © Thorsten Lünborg, 2019 
   * 
@@ -36,11 +42,5 @@
 /*!
  * Vue-Lazyload.js v1.2.6
  * (c) 2018 Awe <hilongjw@gmail.com>
- * Released under the MIT License.
- */
-
-/*!
- * vue-no-ssr v1.1.1
- * (c) 2018-present egoist <0x142857@gmail.com>
  * Released under the MIT License.
  */
