@@ -1,0 +1,366 @@
+<!doctype html>
+<html data-n-head-ssr lang="en" data-n-head="lang">
+  <head data-n-head="">
+    <title data-n-head="true">Reverse engineering Colony Wars Playstation models - suxin.space</title><meta data-n-head="true" charset="utf-8"><meta data-n-head="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-n-head="true" data-hid="description" name="description" content="Sharing my first ever experience of extracting and reverse engineering 3D models from the favorite Playstation game."><meta data-n-head="true" data-hid="og:title" name="og:title" content="Reverse engineering Colony Wars Playstation models - suxin.space"><meta data-n-head="true" data-hid="og:description" name="og:description" content="Sharing my first ever experience of extracting and reverse engineering 3D models from the favorite Playstation game."><meta data-n-head="true" data-hid="og:image" name="og:image" content="https://suxin.space/img/robin_1.jpg"><meta data-n-head="true" data-hid="og:url" name="og:url" content="https://suxin.space"><meta data-n-head="true" data-hid="twitter:card" name="twitter:card" content="summary"><meta data-n-head="true" data-hid="twitter:title" name="twitter:title" content="Reverse engineering Colony Wars Playstation models - suxin.space"><meta data-n-head="true" data-hid="twitter:description" name="twitter:description" content="Sharing my first ever experience of extracting and reverse engineering 3D models from the favorite Playstation game."><meta data-n-head="true" data-hid="twitter:image" name="twitter:image" content="https://suxin.space/robin_icon.png"><meta data-n-head="true" data-hid="twitter:site" name="twitter:site" content="@suxinjke"><link data-n-head="true" rel="shortcut icon" type="image/x-icon" href="/favicon.ico"><link data-n-head="true" rel="icon" type="image/x-icon" href="/favicon.ico"><link data-n-head="true" rel="alternate" type="application/rss+xml" title="suxin.space" href="https://suxin.space/feed.xml"><link data-n-head="true" rel="canonical" href="https://suxin.space/notes/cw-reverse-engineering-models/"><link rel="preload" href="/_nuxt/a57c9a774c2f20e18513.js" as="script"><link rel="preload" href="/_nuxt/f24ddc045dec8bd7c76f.js" as="script"><link rel="preload" href="/_nuxt/c673b4a7846eaabeeb8f.css" as="style"><link rel="preload" href="/_nuxt/21dbf12015bea829ca87.js" as="script"><link rel="preload" href="/_nuxt/ecfd831d0ec8dc938a9e.css" as="style"><link rel="preload" href="/_nuxt/043483ecaf3bd9fb1662.js" as="script"><link rel="preload" href="/_nuxt/933d7ffc7321733105f9.css" as="style"><link rel="preload" href="/_nuxt/ab7767447558a7a92325.js" as="script"><link rel="stylesheet" href="/_nuxt/c673b4a7846eaabeeb8f.css"><link rel="stylesheet" href="/_nuxt/ecfd831d0ec8dc938a9e.css"><link rel="stylesheet" href="/_nuxt/933d7ffc7321733105f9.css">
+  </head>
+  <body data-n-head="">
+    <div data-server-rendered="true" id="__nuxt"><!----><div id="__layout"><div><noscript><style>.js-only{display:none}</style></noscript> <header class="header"><nav class="nav header__nav"><a href="/" class="nav__link nav__link_exact nuxt-link-active"><div class="header-text"><div class="header-text__icon-container"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="home" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="header-text__icon svg-inline--fa fa-home fa-w-18"><path fill="currentColor" d="M280.37 148.26L96 300.11V464a16 16 0 0 0 16 16l112.06-.29a16 16 0 0 0 15.92-16V368a16 16 0 0 1 16-16h64a16 16 0 0 1 16 16v95.64a16 16 0 0 0 16 16.05L464 480a16 16 0 0 0 16-16V300L295.67 148.26a12.19 12.19 0 0 0-15.3 0zM571.6 251.47L488 182.56V44.05a12 12 0 0 0-12-12h-56a12 12 0 0 0-12 12v72.61L318.47 43a48 48 0 0 0-61 0L4.34 251.47a12 12 0 0 0-1.6 16.9l25.5 31A12 12 0 0 0 45.15 301l235.22-193.74a12.19 12.19 0 0 1 15.3 0L530.9 301a12 12 0 0 0 16.9-1.6l25.5-31a12 12 0 0 0-1.7-16.93z"></path></svg></div> <div title="HOME" class="header-text__content"><!----> <h2 class="header-text__primary">HOME</h2></div></div></a> <a href="/notes/" class="nav__link nav__link_expand nuxt-link-active"><div class="header-text"><div class="header-text__icon-container"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="file" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="header-text__icon svg-inline--fa fa-file fa-w-12"><path fill="currentColor" d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"></path></svg></div> <div title="Reverse engineering Colony Wars Playstation models - NOTES" class="header-text__content"><h3 class="header-text__secondary">Reverse engineering Colony Wars Playstation models</h3> <h2 class="header-text__primary">NOTES</h2></div></div></a></nav> <h1 class="header__logo">
+            suXin.space
+        </h1></header> <div class="vue-portal-target"></div> <div class="readable note"><!----> <div class="frontmatter-markdown"><h1><strong>Reverse engineering Colony Wars PSX models</strong></h1> <p>In this note I want to share my experience with ripping 3D models from
+one of my most favorite Playstation games: <strong>Colony Wars: Red Sun</strong>,
+a space dogfighting game.</p> <p>With no prior reverse engineering experience, I want to document how I approached
+the problems, the thought process behind it, and give other people the basic ideas on how things can be done or turn out.</p> <h3>Premise</h3> <p>What's interesting is that history of this side project goes back to the beginning of <strong>2017</strong>.
+I think I was replaying the other game in the series: <strong>Colony Wars: Vengeance</strong> and once again was admiring it's gameplay
+and ship designs. I really love <strong>Hex</strong> - the ship you start with, and part of me wondered
+if it's possible to rip it's model to use in some game prototypes or whatever.</p> <p><em>I really wanted it</em>, and this time I've got a vague idea on how I could try extracting the model,
+the idea that will also be used later for the initial model rips from <strong>Red Sun</strong>.</p> <a href="/img/cw-reverse-engineering-models/hex.jpg" target="_blank" rel="noopener"><img title="Hex ship" alt="Hex ship" src="/img/cw-reverse-engineering-models/hex.jpg"></a> <h2><strong>Hands-on approach</strong></h2> <p><strong>Playstation is infamous when it comes to ripping 3D data.</strong> While most people rely on
+automated tools like <strong>Ninja Ripper</strong>, which can extract in-memory data from various games,
+you can't do that with Playstation games because model format may vary,
+and the end result is basically 2D image. I didn't see anyone easily dumping 3D scenes from Playstation,
+which makes me believe there's no step in the rendering pipeline before it all gets flattened.</p> <p>Due to my programming experience, I had an idea on how certain things could be handled: if there's a ship displayed in the main menu - there must be a variable that defines which ship
+is displayed, along with that variable: <strong>pointers to the actual ship data</strong>: be it 3D mesh, textures, text descriptions, whatever.</p> <p>I decided to try finding these pointers and observe memory with <a href="https://www.cheatengine.org/"><strong>Cheat Engine</strong></a> for model data,
+which would consist of vertexes and faces to form a 3D mesh. Overwriting this data would allow me to see
+how it affects the displayed model and help me understand how it's stored.</p> <p>I think this <strong>hands-on in-memory approach</strong> is quite similar to what automated rippers use,
+the only difference is that we're dealing with unknown model format:
+it's not your basic Playstation TMD/PMD/<abbr title="Hierarchical 3D Model">HMD</abbr>.</p> <p>This is the approach that I've initially used in ripping <strong>HEX</strong> ship from <strong>Colony Wars: Vengeance</strong>.
+In <strong>October 2017</strong>, I also tried the exact same thing with <strong>Colony Wars: Red Sun</strong>.</p> <p>If you want to use <strong>Cheat Engine</strong> to find such pointers, here are a few tips:</p> <ul><li><strong>Playstation has 2MB of RAM</strong>, if you find where's that RAM segment is located in your emulator of choice,
+you can restrict memory search only to that area.</li> <li>You can find the <strong>beginning of RAM segment</strong> by using <strong>psxFin</strong> or <strong>no$psx</strong> emulators that have debugging tools
+and memory preview. Copy plenty of bytes at the beginning of RAM and search for them in <strong>Cheat Engine memory viewer</strong>,
+targeted at the emulator of your choice. <strong>Write down that offset</strong> and consider it <code>0x0</code> of Playstation RAM.</li> <li><strong>Pointers take 4 bytes and are likely to have a byte-prefix with a value of</strong> <code>0x80</code>, for example: <code>0x800A0548</code>.
+You can filter values that are higher than <code>0x80000000</code>. And knowing that RAM is size is 2 MB,
+you can also filter values that are less than <code>0x80200000</code>.</li> <li>Also if you're going to crash your emulator often - look for <strong>automatic process attachment</strong> in <strong>Cheat Engine</strong> settings.</li></ul> <p>In case of <strong>Red Sun</strong>, by following these tips and switching between ships in ship selection menu,
+I reduced search results to three pointers and two distinct addresses.</p> <a href="/img/cw-reverse-engineering-models/pointers.png" target="_blank" rel="noopener"><img title="Selected ship on the left, and three pointers with two distinct addresses related to it" alt="Selected ship on the left, and three pointers with two distinct addresses related to it" src="/img/cw-reverse-engineering-models/pointers.png"></a> <p>With written down address of Playstation RAM beginning (relative to emulator), I can add one of these pointers to get the potential
+location of model. <strong>Obviously the byte with value of <code>80</code> must be omitted</strong>.</p> <p>In my case, the emulator is <strong>ePSXe 1.9.25</strong> and Playstation RAM is located at <code>0x00A8B6A0</code>. By adding one of the found
+addresses: <code>0x000DDBD0</code>, I get:</p> <p><code>0x00A8B6A0 + 0x000DDBD0 = 0x00B69270</code></p> <a href="/img/cw-reverse-engineering-models/pointers2.png" target="_blank" rel="noopener"><img title="Model data on selected ship, with some of the vertexes corrupted" alt="Model data on selected ship, with some of the vertexes corrupted" src="/img/cw-reverse-engineering-models/pointers2.png"></a> <p>This led me to a memory section with loaded model data. By overwriting random
+portions of this memory section, you can see how it affects the displayed ship.</p> <p>You may expect to deal with pointers alot, and calculating these offsets may be
+tiresome. I wonder if Cheat Engine could make it easier for you, otherwise
+you can always setup a spreadsheet. I still used Programming mode in Windows calculator
+most of the times.</p> <p>When I was initially ripping <strong>Hex</strong> from <strong>Colony Wars: Vengenace</strong>, I tried to figure out where
+the section with vertexes began and where it ended. Looking at raw memory is often
+intimidating, but the more you stare at it, the more patterns you eventually find out.
+In the screenshot above, below the highlighted line, you can observe two padding <code>00 00</code> bytes
+which go along with all vertexes. This makes me assume that after I stop seeing these <code>00 00</code> bytes
+in these columns, the section of vertexes has ended and it's something else.</p> <p>It was clear that a vertex structure takes 8 bytes, and knowing that a vertex is just a point in 3D space,
+that makes me assume that I'm dealing with</p> <pre><code class="hljs language-cpp"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Vertex</span> {</span>
+    <span class="hljs-keyword">short</span> x;
+    <span class="hljs-keyword">short</span> y;
+    <span class="hljs-keyword">short</span> z;
+    <span class="hljs-keyword">short</span> pad;
+};
+</code></pre> <p>By dumping bytes related to vertexes, I parsed them with a <strong>Python script</strong> using <strong>struct</strong> module,
+the parsed vertexes were then written into <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront OBJ</a> file,
+which was loaded in <strong>Blender</strong>, resulting in this point cloud:</p> <a href="/img/cw-reverse-engineering-models/pointcloud.jpg" target="_blank" rel="noopener"><img title="Vertexes of Hex ship" alt="Vertexes of Hex ship" src="/img/cw-reverse-engineering-models/pointcloud.jpg"></a> <p>In a similar manner, I figured out how <strong>faces</strong> and <strong>UV mapping</strong> were stored and also parsed and put them into <strong>OBJ file</strong>.
+<strong>The only thing left was extracting textures</strong>. During that time I only wanted to extract this particular ship and I was
+already tired of staring at Cheat Engine. This led to the approach I would never recommend to anyone: peeking at
+<strong>Playstation VRAM</strong> with <strong><a href="https://www.romhacking.net/utilities/442/">PSX V-Ram</a></strong>.</p> <p>Why I don't recommend it? <strong>This tool is atrocious</strong> - you can only use it by pressing keys specified in <strong>README</strong>,
+and if you want to extract a texture from here - <strong>you have to Print Screen the window and crop what you need pixel perfectly</strong>,
+and I'm not even talking about finding the correct texture mode and palette.</p> <p>Nevertheless, I still went through this method, on the screenshot below you may see the packed textures,
+<strong>and palettes on the right</strong>, one for each ship's texture. So I had to find correct combinations
+of textures and palettes, make tons of screenshots and combine them together to make a proper texture.</p> <a href="/img/cw-reverse-engineering-models/psxvram.png" target="_blank" rel="noopener"><img title="PSX VRAM" alt="PSX VRAM" src="/img/cw-reverse-engineering-models/psxvram.png"></a> <a href="/img/cw-reverse-engineering-models/hex2.jpg" target="_blank" rel="noopener"><img title="Hex" alt="Hex" src="/img/cw-reverse-engineering-models/hex2.jpg"></a> <p>The ship models from <strong>Red Sun</strong> were ripped in <strong>October 2017</strong> in a similar manner, the major
+difference was extracting textures directly from <strong>VRAM section</strong> and converting them into <strong>PNG files</strong>.
+The models theirselves were also more difficult to grasp, with multiple meshes and offsets relative to each other (more detail on this later).</p> <p>After extraction of these ships, <strong>I wondered if I could dare to get all models</strong>. It took <strong>1 year and 7 months</strong> before I played
+the game again and actually <strong>dared</strong>.</p> <a href="/img/cw-reverse-engineering-models/red-sun-ships.jpg" target="_blank" rel="noopener"><img title="Red Sun untextured ships" alt="Red Sun untextured ships" src="/img/cw-reverse-engineering-models/red-sun-ships.jpg"></a> <a href="/img/cw-reverse-engineering-models/red-sun-snapdragon.jpg" target="_blank" rel="noopener"><img title="Snapdragon" alt="Snapdragon" src="/img/cw-reverse-engineering-models/red-sun-snapdragon.jpg"></a> <h2><strong>Resource extraction</strong></h2> <p>If I were to extract <strong>all</strong> models, in-memory approach is not feasible anymore, because I would have to launch every mission in the game and also deal with finding a list of pointers to the models. It is also much more difficult to observe model changes when overwriting memory due to dynamic nature of the game. Did I mention the emulator/game may crash often when attempting to do this?</p> <p>Obviously, the classic way of ripping the file directly was the only option.</p> <p>We're dealing with <strong>GAME.RSC</strong>, it's the only file that may have models because the others just don't fit. <strong>RSC</strong> extension also hints that it's a <strong>ReSourCe file</strong>.</p> <a href="/img/cw-reverse-engineering-models/directory.png" target="_blank" rel="noopener"><img title="Red Sun contents" alt="Red Sun contents" src="/img/cw-reverse-engineering-models/directory.png"></a> <p><strong>The Memory Viewer</strong> in <strong>Cheat Engine</strong> is absolutely great, <s>but unfortunately it seems impossible to load a file</s> and you can also use it to view file contents. The option is somewhat hidden in a highlighted menu entry. I really wish I knew it's possible beforehand, because Cheat Engine also has struct dissection tools, several display modes and more. Instead, I was using <a href="https://mh-nexus.de/en/hxd/"><strong>HxD</strong> hex editor</a>. I think I'd still prefer <strong>HxD</strong> for very quick previews and it's tab support.</p> <a href="/img/cw-reverse-engineering-models/ce-process.png" target="_blank" rel="noopener"><img title="Cheat Engine" alt="Cheat Engine" src="/img/cw-reverse-engineering-models/ce-process.png"></a> <p>I'm immediately presented with what could be <strong>file names</strong>. Remember to look for patterns and make assumptions: the gap between the beginning of each name is <code>0x14</code> bytes, which hints at the fixed structure. If you also consider the fact it's an old Playstation game: the file names are short by design - it's something that filesystem might have required, akin to <strong>DOS</strong> era. Assuming that file names are of fixed length, I also notice something at the end of the selected entry on screenshot. Take note of <code>A9 00 00 02</code> on <strong>CREDITSB_TIM</strong>, and then compare it to the ending of previous entry - <strong>CREDITSA_TIM</strong> which has <code>A8 00 00 02</code>, while I have no idea what <code>02</code> is, the first two bytes have adjacent values that I could interpret as some kind of index.</p> <a href="/img/cw-reverse-engineering-models/game-rsc1.png" target="_blank" rel="noopener"><img title="GAME.RSC" alt="GAME.RSC" src="/img/cw-reverse-engineering-models/game-rsc1.png"></a> <p>Since I was not using Cheat Engine initially to interpret such structures, I started making a basic <strong>node.js</strong> script. My approach is to map structures to functions that accept <strong>Buffer of file contents</strong> with an <strong>offset to read from</strong>, and return an <strong>object with meaningful info</strong>. The default function arguments are only provided to give <strong>Visual Studio Code</strong> a hint for code completion.</p> <pre><code class="hljs language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">formatPointer</span>(<span class="hljs-params"> num = <span class="hljs-number">0</span> </span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">'0x'</span> + num.toString( <span class="hljs-number">16</span> ).padStart( <span class="hljs-number">8</span>, <span class="hljs-string">'0'</span> )
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseDOSName</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>), <span class="hljs-title">offset</span> = 0 ) </span>{
+    <span class="hljs-keyword">return</span> FILE.slice( offset, offset + <span class="hljs-number">12</span> ).toString( <span class="hljs-string">'utf8'</span> ).replace( <span class="hljs-regexp">/\u0000/g</span>, <span class="hljs-string">''</span> )
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseFileEntry</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>), <span class="hljs-title">offset</span> = 0 ) </span>{
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">offset</span>: formatPointer( offset ),
+        <span class="hljs-attr">name</span>: parseDOSName( FILE, offset ),
+        <span class="hljs-attr">index_maybe</span>: FILE.readInt16LE( offset + <span class="hljs-number">0x10</span> )
+    }
+}
+
+<span class="hljs-comment">// read file with 'fs' and make a loop to use parseFileEntry</span>
+</code></pre> <p>Example output:</p> <pre><code class="hljs language-js">[ { <span class="hljs-attr">offset</span>: <span class="hljs-string">'0x00000084'</span>,
+    <span class="hljs-attr">name</span>: <span class="hljs-string">'CREDITS_PAL'</span>,
+    <span class="hljs-attr">index_maybe</span>: <span class="hljs-number">158</span> },
+  { <span class="hljs-attr">offset</span>: <span class="hljs-string">'0x00000098'</span>,
+    <span class="hljs-attr">name</span>: <span class="hljs-string">'CREDITS_USA'</span>,
+    <span class="hljs-attr">index_maybe</span>: <span class="hljs-number">167</span> },
+  { <span class="hljs-attr">offset</span>: <span class="hljs-string">'0x000000ac'</span>,
+    <span class="hljs-attr">name</span>: <span class="hljs-string">'CREDITSA_TIM'</span>,
+    <span class="hljs-attr">index_maybe</span>: <span class="hljs-number">168</span> },
+</code></pre> <p>While scrolling around I've also found more text data, which looked like mission scripts. There were also mission briefings in a same plain text format and more. It was only a matter of correctly mapping one of the file names at the beginning to the actual file contents. For now, I had some potential indexes but not the location of files.</p> <a href="/img/cw-reverse-engineering-models/game-rsc2.png" target="_blank" rel="noopener"><img title="Mission data" alt="Mission data" src="/img/cw-reverse-engineering-models/game-rsc2.png"></a> <p>Going back to file names, I notice them being in alphabetical order, but sometimes it starts over again. For me this hints at several directories. For some reason it took me a day or two to atleast try looking for directory entries, which I've found before the file names.</p> <a href="/img/cw-reverse-engineering-models/game-rsc3.png" target="_blank" rel="noopener"><img title="New directory" alt="New directory" src="/img/cw-reverse-engineering-models/game-rsc3.png"></a> <a href="/img/cw-reverse-engineering-models/game-rsc4.png" target="_blank" rel="noopener"><img title="Directory entries" alt="Directory entries" src="/img/cw-reverse-engineering-models/game-rsc4.png"></a> <p>The first 4 bytes of selection above indicate an offset where the file names are located for this directory: <code>0x4E18</code>, and the next 4 bytes specify amount of files: <code>0x39</code> (57 files). These assumptions can be quickly evaluated by using <strong>Go To</strong> function in your hex editor and then making a selection or moving by offset of file entry structure size multiplied by amount of files.</p> <p>Another function was made to parse these, notice how it depends on <code>parseFileEntry</code>. Such setup allows for composition and I like it alot.</p> <pre><code class="hljs language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseDirectory</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>), <span class="hljs-title">offset</span> = 0 ) </span>{
+    <span class="hljs-keyword">const</span> directory_ptr = FILE.readInt32LE( offset )
+    <span class="hljs-keyword">const</span> file_amount = FILE.readInt32LE( offset + <span class="hljs-number">0x4</span> )
+
+    <span class="hljs-keyword">const</span> files = [ ... new <span class="hljs-built_in">Array</span>( file_amount ) ]
+        .map( <span class="hljs-function">(<span class="hljs-params"> _, index </span>) =></span> parseFileEntry( FILE, directory_ptr + index * <span class="hljs-number">0x14</span> ) )
+
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">directory_ptr</span>: formatPointer( directory_ptr ),
+        file_amount,
+
+        files
+    }
+}
+</code></pre> <p>From now on I paid more attention to offsets, amounts and sizes. If you were programming to produce such resource file you'd probably end up parsing these to know what you have to read next. <strong>This made me believe that no one is able to properly reverse engineer anything until they program or deal with something similar theirselves.</strong> When you see a structure, always remember there better be something that describes how to access it.</p> <p>Funny enough, this approach didn't work with directory entries. They start at an offset of <code>0x4</code>, the initial 4 bytes before that: <code>F8 5E 00 00</code> turned out to be an offset to a very important <strong>table with file locations</strong>.</p> <p>Since directory entries are of fixed size, I just observed how many I had manually, turned out there are <strong>16 directories</strong> and some of them are really weird, consisting of nothing but zeroes.</p> <p>Just how directory is composed of files, I can now compose resource file with directories</p> <pre><code class="hljs language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseResources</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>) ) </span>{
+    <span class="hljs-keyword">const</span> file_offsets_ptr = FILE.readInt32LE( <span class="hljs-number">0</span> )
+
+    <span class="hljs-keyword">const</span> directory_amount = <span class="hljs-number">16</span>
+
+    <span class="hljs-keyword">const</span> directories = [ ...new <span class="hljs-built_in">Array</span>( directory_amount ) ]
+        .map( <span class="hljs-function">(<span class="hljs-params"> _, index </span>) =></span> parseDirectory( FILE, <span class="hljs-number">0x4</span> + index * <span class="hljs-number">0x8</span> ) )
+
+    <span class="hljs-comment">// return directories and more</span>
+</code></pre> <h3><strong>File offset table</strong></h3> <p>The previously mentioned <code>F8 5E 00 00</code> marks the beginning of file table. At the beginning of it I once again have what I've figured out to be an amount value, and then a pair of what perhaps could be <strong>File offset</strong> and then maybe a <strong>File type</strong>?</p> <a href="/img/cw-reverse-engineering-models/game-rsc5.png" target="_blank" rel="noopener"><img title="File offset table" alt="File offset table" src="/img/cw-reverse-engineering-models/game-rsc5.png"></a> <p>So if one of the previously parsed file entries has an index of <code>0</code>, I'd assume it to be at <code>0x126E4</code>. By combining the directories with file names and this table, you now know where each file is located, <strong>but there's no size info</strong>.</p> <p>I didn't find if there's size stored for each file, and attempts to find it wasted plenty of time before I decided to calculate the sizes myself: <em>maybe that's what the game does anyway</em>. Size calculation is done in the second <code>map</code> loop below, don't mind that the last entry will always have a size of zero, because it really does, <strong>a lot of last entries look like</strong>: <code>84 04 0F 03 05 00 00 00</code>, with no progression at all, which still remains a mystery for me.</p> <pre><code class="hljs language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseFileOffsets</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>), <span class="hljs-title">offset</span> = 0 ) </span>{
+    <span class="hljs-keyword">const</span> file_amount = FILE.readInt32LE( offset )
+
+    <span class="hljs-keyword">return</span> [ ...new <span class="hljs-built_in">Array</span>( file_amount ) ]
+        .map( <span class="hljs-function">(<span class="hljs-params"> _, index </span>) =></span> ( {
+            index,
+            <span class="hljs-attr">offset</span>: FILE.readInt32LE( ( offset + <span class="hljs-number">0x8</span> * index ) + <span class="hljs-number">0x4</span> ),
+            <span class="hljs-attr">file_type_maybe</span>: FILE.readInt32LE( ( offset + <span class="hljs-number">0x8</span> * index ) + <span class="hljs-number">0x8</span> )
+        } ) )
+        .map( <span class="hljs-function">(<span class="hljs-params"> file, index, array </span>) =></span> {
+            <span class="hljs-keyword">const</span> next_file = array[index + <span class="hljs-number">1</span>]
+
+            <span class="hljs-keyword">return</span> {
+                ...file,
+                <span class="hljs-attr">size</span>: next_file ? ( next_file.offset - file.offset ) : <span class="hljs-number">0</span>
+            }
+        } )
+}
+</code></pre> <p>With all of this info I had at this point, I was ready to extract the files. There were no names for directories so I had to name them myself based on directory index.</p> <a href="/img/cw-reverse-engineering-models/game-rsc6.png" target="_blank" rel="noopener"><img title="Extracted files" alt="Extracted files" src="/img/cw-reverse-engineering-models/game-rsc6.png"></a> <p>Before moving on to parsing model files, I want to comment on a mystery <strong>dummy files</strong> directory on this screenshot. Like I mentioned, some of the entries in file offset table have a calculated size of zero, and so it happened that some of the named files referred to these zero-sized entries. The file names made me assume that they could be textures, but if they were textures, why there were only 228 of them? Why they don't have <strong>TIM</strong> extension like on some of the other non-dummy files? <em>Maybe these are packed differently?</em> But most likely I missed something. I will leave this mystery as it is, I don't care about these files much.</p> <p><strong>Textures were the final problem</strong>. The named files only properly referred to the loading screen textures, and if I managed to extract them and apply to parsed models later, how would I know which textures to use? This made me worried, but once again by observing whatever I had so far, I found something weird.</p> <p>After sorting all named file entries by their file offset table index, I noticed huge gaps among these indexes. It's like there <em>could be</em> a directory to refer to some more files, but nothing that I could see explicitly. I decided to follow a file offset for one of the indexes that falls into gap, which presented me with <code>10 00 00 00</code> - a header for <strong>TIM</strong> texture format. <strong>It's also worth noting that all these file offsets had value of</strong> <code>5</code> <strong>along with it</strong>, which made me assume that <code>5</code> could indicate a texture file.</p> <p>To extract textures, I just filtered the array with file offsets by having a <code>file_type_maybe</code> of 5, and extracted these files in a separate directory. Later on, I will realise that despite there being <em>several</em> gaps with different file offset indexes, combining all of them together sequentially will still map correctly to the texture indexes that models have.</p> <p>Why it's so convoluted compared to other files remains a mystery for me. Maybe optimizations from resource packer?</p> <h2><strong>Parsing models</strong></h2> <p>Just like <strong>Resource extraction</strong>, figuring out models relies on assumptions and finding pointers that will lead me in a right way. Despite the fact that I had some scraps and code to extract and parse ship models from Playstation RAM, I decided to approach these model files from scratch and more clear headed, referring to what I previously had only if necessary.</p> <p>Rather than just describing model format, I want to focus on problems I had and how they were approached.</p> <h3><strong>Faces</strong></h3> <p>Faces connect vertexes together. The main problem with the face structures we're dealing with: <strong>there are both tris and quads, and their structure width my vary</strong>.</p> <p>Generally, <strong>Face structure</strong> consists of <strong>Header</strong>, <strong>Vertex indexes</strong>, <strong>UV data</strong> and <strong>Texture index</strong>, but there's also something in between, perhaps something that only Playstation would care about when rendering. I'm pretty sure all required information is contained within the header, but I never bothered with decoding it. <em>Maybe if I converted all headers into binary, I would notice a bit that all quads share? Or more?</em></p> <p>Initially, I only parsed <strong>Vertex indexes</strong> and these go always after the header, but since structure size varies, I still had to calculate the offset for the next face. My approach is dumb: every time I encountered a new face header and got a thrown error, I observe it in the hex editor and then add a new record to the face dictionary, which maps the header to structure size; I also mark if it's quad.</p> <p>Later on, calculating offsets to data required for textures wasn't too difficult, as fortunately it was always in the same order relative to the structure end. <em>The old in-memory parser had <strong>UV</strong> and <strong>Texture</strong> offsets marked explicitly and in general is much less elegant</em>.</p> <p><strong>There's a total of 34 face types that I've encountered.</strong></p> <pre><code class="hljs language-js"><span class="hljs-keyword">const</span> faceTypes = {
+<span class="hljs-comment">// ...</span>
+    <span class="hljs-number">0x0C79</span>: { <span class="hljs-attr">size</span>: <span class="hljs-number">0x18</span> },
+    <span class="hljs-number">0x0CB4</span>: { <span class="hljs-attr">size</span>: <span class="hljs-number">0x18</span>, <span class="hljs-attr">quad</span>: <span class="hljs-literal">true</span> },
+    <span class="hljs-number">0x0CB8</span>: { <span class="hljs-attr">size</span>: <span class="hljs-number">0x18</span> },
+    <span class="hljs-number">0x0F3C</span>: { <span class="hljs-attr">size</span>: <span class="hljs-number">0x1E</span>, <span class="hljs-attr">quad</span>: <span class="hljs-literal">true</span> },
+    <span class="hljs-number">0x0F7D</span>: { <span class="hljs-attr">size</span>: <span class="hljs-number">0x1E</span>, <span class="hljs-attr">quad</span>: <span class="hljs-literal">true</span> },
+    <span class="hljs-number">0x0FBC</span>: { <span class="hljs-attr">size</span>: <span class="hljs-number">0x1E</span>, <span class="hljs-attr">quad</span>: <span class="hljs-literal">true</span> },
+<span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseFace</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>), <span class="hljs-title">offset</span> = 0 ) </span>{
+    <span class="hljs-keyword">const</span> type = FILE.readUInt16LE( offset )
+    <span class="hljs-keyword">const</span> faceType = faceTypes[type]
+    <span class="hljs-keyword">if</span> ( !faceType ) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>( <span class="hljs-string">`Unknown facetype: <span class="hljs-subst">${formatPointer( type )}</span>\noffset: <span class="hljs-subst">${formatPointer( offset )}</span>`</span> )
+    }
+    <span class="hljs-keyword">const</span> { size, quad } = faceType
+
+    <span class="hljs-keyword">const</span> vertex_amount = quad ? <span class="hljs-number">4</span> : <span class="hljs-number">3</span>
+
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">offset</span>: formatPointer( offset ),
+        <span class="hljs-attr">type</span>: formatPointer( type ),
+
+        <span class="hljs-attr">vertexes</span>: [ ... new <span class="hljs-built_in">Array</span>( vertex_amount ) ]
+            .map( <span class="hljs-function">(<span class="hljs-params"> _, index </span>) =></span> FILE.readInt16LE( offset + <span class="hljs-number">0x2</span> * index + <span class="hljs-number">0x2</span> ) ),
+
+        <span class="hljs-attr">texture_index</span>: FILE.readInt32LE( offset + size - vertex_amount * <span class="hljs-number">2</span> - <span class="hljs-number">0x4</span> ),
+
+        <span class="hljs-attr">uv</span>: [ ... new <span class="hljs-built_in">Array</span>( vertex_amount ) ]
+            .map( <span class="hljs-function">(<span class="hljs-params"> _, index </span>) =></span> {
+                <span class="hljs-keyword">const</span> uv_start = offset + size - vertex_amount * <span class="hljs-number">2</span>
+                <span class="hljs-keyword">return</span> {
+                    <span class="hljs-attr">x</span>: FILE.readUInt8( uv_start + <span class="hljs-number">0x0</span> + index * <span class="hljs-number">0x2</span> ),
+                    <span class="hljs-attr">y</span>: FILE.readUInt8( uv_start + <span class="hljs-number">0x1</span> + index * <span class="hljs-number">0x2</span> )
+                }
+            } )
+    }
+}
+</code></pre> <h3><strong>Objects and offsets</strong></h3> <p>Compared to the only ship that I've ripped from <strong>Colony Wars: Vengeance</strong>, the models in <strong>Red Sun</strong> turned out to be much more complicated because they consist of several parts. I figured it out during in-memory approach by accidentally making a portion of ship disappear, or making it huge like on screenshot below:</p> <a href="/img/cw-reverse-engineering-models/red-sun-huge-zaibatsu.jpg" target="_blank" rel="noopener"><img title="Very huge Zaibatsu" alt="Very huge Zaibatsu" src="/img/cw-reverse-engineering-models/red-sun-huge-zaibatsu.jpg"></a> <p>Even if you find where these separate objects are located and extract their mesh - the position offset and other required data doesn't come with it.</p> <p><strong>Because it's located in entirely different section at the beginning of the model file</strong>, which I call <strong>Object meta section</strong>.</p> <p>Every model may consist of several objects, every object can be a child of the other object. <strong>There can be several levels of nesting</strong>. The actual objects and their mesh may not go in sequential order as declared in <strong>object meta section</strong> - not paying attention to that resulted in faulty model exports with incorrect offsets:</p> <a href="/img/cw-reverse-engineering-models/faulty-offsets.png" target="_blank" rel="noopener"><img title="Incorrect offsets" alt="Incorrect offsets" src="/img/cw-reverse-engineering-models/faulty-offsets.png"></a> <p>You also have to apply offsets correctly when exporting to <strong>OBJ</strong> file, because of the mentioned several levels of nesting. Just summing the required offsets together did it right.</p> <h3><strong>Object rotations</strong></h3> <p>There's more than just positional offsets: <strong>rotations</strong>, and these took me awhile too because I was way too used to basic <strong>Euler XYZ</strong> system with <strong>Pitch/Yaw/Roll</strong>, when in this case it turned out to be a <strong>rotation matrix</strong>.</p> <p>What's interesting is that noticing the rotation matrix would take ages for me if I didn't try accidentally doing <a href="http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/">some OpenGL tutorials</a> several days beforehand. 3D graphics often relies on matricies for rendering, and after finally assuming that rotation could be stored this way, I've got this on most of the objects:</p> <pre><code class="hljs">[
+    [ <span class="hljs-number">4096</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span> ],
+    [ <span class="hljs-number">0</span>, <span class="hljs-number">4096</span>, <span class="hljs-number">0</span> ],
+    [ <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">4096</span> ],
+]
+</code></pre> <p>Which means <strong>no rotation applied</strong>, or <strong>zeroes on Pitch/Yaw/Roll</strong>. The values being <code>4096</code> is most likely a Playstation quirk, because it doesn't operate with floating point numbers, so these must be normalized to <code>1.0f</code>. To check that I did everything correctly, I was converting matricies to <strong>Euler XYZ</strong> with <a href="https://www.andre-gaschler.com/rotationconverter/">Online 3D Rotation Converter</a> and rotated exported objects manually in <strong>Blender</strong> to see if it's correct. <a href="https://stackoverflow.com/a/34052492">This answer also gave me a proper reference of what I had to multiply</a> to calculate a new vertex position with applied rotation.</p> <p>To be honest I still have no idea on how rotation matrix works and how it's converted to Euler. <em>Not that I want to understand it</em>.</p> <pre><code class="hljs language-js"><span class="hljs-comment">// 4096 = 1.0f</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">normalizeRotationMatrix</span>(<span class="hljs-params">
+    rotationMatrix = [ [ <span class="hljs-number">4096</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span> ], [ <span class="hljs-number">0</span>, <span class="hljs-number">4096</span>, <span class="hljs-number">0</span> ], [ <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">4096</span> ] ]
+</span>) </span>{
+    <span class="hljs-keyword">const</span> result = [
+        [ ...rotationMatrix[<span class="hljs-number">0</span>] ],
+        [ ...rotationMatrix[<span class="hljs-number">1</span>] ],
+        [ ...rotationMatrix[<span class="hljs-number">2</span>] ]
+    ]
+
+    <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">const</span> row <span class="hljs-keyword">of</span> result ) {
+        <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span> ; i &lt; row.length ; i++ ) {
+            row[i] = ( row[i] / <span class="hljs-number">4096</span> )
+        }
+    }
+
+    <span class="hljs-keyword">return</span> result
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rotate</span>(<span class="hljs-params">
+    coords = { x: <span class="hljs-number">0</span>, y: <span class="hljs-number">0</span>, z: <span class="hljs-number">0</span> },
+    rotationMatrix = [ [ <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span> ], [ <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span> ], [ <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span> ] ]
+</span>) </span>{
+
+    <span class="hljs-keyword">const</span> { x, y, z } = coords
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">x</span>: x * rotationMatrix[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] + y * rotationMatrix[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>] + z * rotationMatrix[<span class="hljs-number">0</span>][<span class="hljs-number">2</span>],
+        <span class="hljs-attr">y</span>: x * rotationMatrix[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>] + y * rotationMatrix[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>] + z * rotationMatrix[<span class="hljs-number">1</span>][<span class="hljs-number">2</span>],
+        <span class="hljs-attr">z</span>: x * rotationMatrix[<span class="hljs-number">2</span>][<span class="hljs-number">0</span>] + y * rotationMatrix[<span class="hljs-number">2</span>][<span class="hljs-number">1</span>] + z * rotationMatrix[<span class="hljs-number">2</span>][<span class="hljs-number">2</span>]
+    }
+}
+</code></pre> <p>The resulting <strong>Object meta entry</strong> was parsed like this</p> <pre><code class="hljs language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseObjectMeta</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>), <span class="hljs-title">offset</span> = 0 ) </span>{
+    <span class="hljs-keyword">const</span> rotation_matrix = [
+        [
+            FILE.readInt16LE( offset + <span class="hljs-number">0x0C</span> ),
+            FILE.readInt16LE( offset + <span class="hljs-number">0x0E</span> ),
+            FILE.readInt16LE( offset + <span class="hljs-number">0x10</span> )
+        ],
+        [
+            FILE.readInt16LE( offset + <span class="hljs-number">0x12</span> ),
+            FILE.readInt16LE( offset + <span class="hljs-number">0x14</span> ),
+            FILE.readInt16LE( offset + <span class="hljs-number">0x16</span> )
+        ],
+        [
+            FILE.readInt16LE( offset + <span class="hljs-number">0x18</span> ),
+            FILE.readInt16LE( offset + <span class="hljs-number">0x1A</span> ),
+            FILE.readInt16LE( offset + <span class="hljs-number">0x1C</span> )
+        ],
+    ]
+
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">offset</span>: formatPointer( offset ),
+        <span class="hljs-attr">parent_index</span>: FILE.readInt32LE( offset + <span class="hljs-number">0x0</span> ),
+
+        rotation_matrix,
+        <span class="hljs-attr">rotation_matrix_normalized</span>: normalizeRotationMatrix( rotation_matrix ),
+
+        <span class="hljs-attr">x_offset</span>: FILE.readInt32LE( offset + <span class="hljs-number">0x20</span> ),
+        <span class="hljs-attr">y_offset</span>: FILE.readInt32LE( offset + <span class="hljs-number">0x24</span> ),
+        <span class="hljs-attr">z_offset</span>: FILE.readInt32LE( offset + <span class="hljs-number">0x28</span> ),
+    }
+}
+</code></pre> <h3><strong>Object scaling</strong></h3> <p>So here goes offset, rotation, <strong>but no scale</strong>, which is really weird. Scale is not stored in <strong>Object meta</strong>, but along with object's mesh, and it's not your traditional scale by XYZ, neither it's scale matrix, but <strong>just a single number</strong> to rely on.</p> <p>If said number is <code>0</code> - scale is 1 for all dimensions; value of <code>1</code> will result in scale of 2, and value of <code>2</code> will turn the scale into 4. I don't know why it's like this, maybe I've missed a proper scale matrix, because if you look back on abnormally large ship screenshot - the increased scale was not applied to all dimensions.</p> <p>Here's the <strong>final form of Red Sun</strong> with all offsets, rotations and scaling applied correctly:</p> <a href="/img/cw-reverse-engineering-models/red-sun.jpg" target="_blank" rel="noopener"><img title="Red Sun untextured" alt="Red Sun untextured" src="/img/cw-reverse-engineering-models/red-sun.jpg"></a> <h3><strong>Level of detail</strong></h3> <p>Another thing that took me awhile to figure is the fact that some models have <strong>Level of Detail (LOD) meshes</strong> included. I stumbled upon them when iterating objects of certain models, only for my parser to crash because the next entry wasn't object, but something else.</p> <p>This was during the time when I didn't separate <strong>object</strong> and <strong>it's mesh</strong>. Turns out every object has mesh counter so I also relied on that during parsing, but my mistake was combining these mesh into one, which resulted in z-fighting:</p> <a href="/img/cw-reverse-engineering-models/red-sun-lod.gif" target="_blank" rel="noopener"><img title="Red Sun merged LOD" alt="Red Sun merged LOD" src="/img/cw-reverse-engineering-models/red-sun-lod.gif"></a> <p>I knew what <strong>LODs</strong> were, but once again it took me awhile to realise I was dealing with them. I was too much focused on thinking that it's an actual part of the model because I mistakenly fused it with a high detailed mesh. <em>I wonder if I would leave it like this if it wasn't for annoying z-fighting.</em></p> <h3>Textures</h3> <p>Figuring out which textures are required for a model was simple. They are specified at the beginning of the file. If you remember the <strong>Resource extraction</strong> section - I've noted that number <code>5</code> may indicate that the file is a texture, and such trait is also shared here. The way I've extracted textures from resource file also turned out to be correct: the index specified before number <code>5</code> is only related to texture files in an order they are packed.</p> <a href="/img/cw-reverse-engineering-models/textures.png" target="_blank" rel="noopener"><img title="Texture indexes" alt="Texture indexes" src="/img/cw-reverse-engineering-models/textures.png"></a> <h3><strong>Normals?</strong></h3> <p>In the code of <code>parseMesh</code> function below, you may notice that I've included normal related info, but since I'm dealing with simple low-poly Playstation models, and the fact that I could generate normals myself in <strong>Blender</strong> - I decided not to care about them. <strong>Also it wasn't confirmed that these are normals anyway</strong>.</p> <h3>The final structures code</h3> <pre><code class="hljs language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseMesh</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>), <span class="hljs-title">offset</span> = 0 ) </span>{
+    <span class="hljs-keyword">const</span> size = FILE.readInt32LE( offset )
+
+    <span class="hljs-keyword">const</span> vertex_amount = FILE.readInt32LE( offset + <span class="hljs-number">0xC</span> )
+    <span class="hljs-keyword">const</span> vertex_rel_pointer = FILE.readInt32LE( offset + <span class="hljs-number">0x10</span> )
+    <span class="hljs-keyword">const</span> vertex_abs_pointer = offset + vertex_rel_pointer
+
+    <span class="hljs-keyword">const</span> face_amount = FILE.readInt32LE( offset + <span class="hljs-number">0x1C</span> )
+    <span class="hljs-keyword">const</span> face_rel_pointer = FILE.readInt32LE( offset + <span class="hljs-number">0x24</span> )
+    <span class="hljs-keyword">const</span> face_abs_pointer = offset + face_rel_pointer
+
+    <span class="hljs-keyword">const</span> faces = []
+    <span class="hljs-keyword">let</span> face_offset = face_abs_pointer
+    <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span> ; i &lt; face_amount ; i++ ) {
+        <span class="hljs-keyword">const</span> face = parseFace( FILE, face_offset )
+
+        faces.push( face )
+        face_offset += face.size
+    }
+
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">offset</span>: formatPointer( offset ),
+        size,
+
+        <span class="hljs-attr">scale_factor</span>: FILE.readInt8( offset + <span class="hljs-number">0x8</span> ),
+
+        vertex_amount,
+        <span class="hljs-attr">vertex_offset</span>: {
+            <span class="hljs-attr">rel</span>: formatPointer( vertex_rel_pointer ),
+            <span class="hljs-attr">abs</span>: formatPointer( vertex_abs_pointer )
+        },
+
+        <span class="hljs-attr">normals_amount_maybe</span>: FILE.readInt32LE( offset + <span class="hljs-number">0x14</span> ),
+        <span class="hljs-attr">normals_offset_maybe</span>: {
+            <span class="hljs-attr">rel</span>: formatPointer( FILE.readInt32LE( offset + <span class="hljs-number">0x18</span> ) ),
+            <span class="hljs-attr">abs</span>: formatPointer( offset + FILE.readInt32LE( offset + <span class="hljs-number">0x18</span> ) )
+        },
+
+        <span class="hljs-attr">faces_amount</span>: face_amount,
+        <span class="hljs-attr">faces_offset</span>: {
+            <span class="hljs-attr">rel</span>: formatPointer( face_rel_pointer ),
+            <span class="hljs-attr">abs</span>: formatPointer( face_abs_pointer )
+        },
+
+        <span class="hljs-attr">vertexes</span>: [ ...new <span class="hljs-built_in">Array</span>( vertex_amount ) ]
+            .map( <span class="hljs-function">(<span class="hljs-params"> _, index </span>) =></span> ( {
+                index,
+                ...parseVertex( FILE, vertex_abs_pointer + index * <span class="hljs-number">0x8</span> )
+            } ) ),
+
+        faces
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseObject</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>), <span class="hljs-title">offset</span> = 0 ) </span>{
+    <span class="hljs-keyword">const</span> object_size = FILE.readInt32LE( offset )
+    <span class="hljs-keyword">const</span> object_index = FILE.readInt32LE( offset + <span class="hljs-number">0x4</span> )
+    <span class="hljs-keyword">const</span> mesh_amount = FILE.readInt32LE( offset + <span class="hljs-number">0x8</span> )
+
+    <span class="hljs-keyword">const</span> first_mesh_rel_pointer = FILE.readInt32LE( offset + <span class="hljs-number">0x10</span> )
+    <span class="hljs-keyword">const</span> first_mesh_abs_pointer = offset + first_mesh_rel_pointer
+
+    <span class="hljs-keyword">const</span> meshes = []
+    <span class="hljs-keyword">let</span> mesh_offset = first_mesh_abs_pointer
+    <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span> ; i &lt; mesh_amount ; i++ ) {
+        <span class="hljs-keyword">const</span> mesh = parseMesh( FILE, mesh_offset )
+
+        meshes.push( {
+            <span class="hljs-attr">mesh_index</span>: i,
+            ...mesh
+        } )
+        mesh_offset += mesh.size
+    }
+
+    <span class="hljs-keyword">return</span> {
+        object_index,
+        <span class="hljs-attr">object_offset</span>: formatPointer( offset ),
+        object_size,
+
+        mesh_amount,
+        <span class="hljs-attr">first_mesh_pointer</span>: {
+            <span class="hljs-attr">rel</span>: formatPointer( first_mesh_rel_pointer ),
+            <span class="hljs-attr">abs</span>: formatPointer( first_mesh_abs_pointer )
+        },
+
+        meshes
+    }
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseModel</span>(<span class="hljs-params"> FILE = Buffer.alloc( <span class="hljs-number">0</span> </span>) ) </span>{
+    <span class="hljs-keyword">const</span> object_meta_amount = FILE.readInt32LE( <span class="hljs-number">0x34</span> )
+
+    <span class="hljs-keyword">const</span> texture_amount = FILE.readInt32LE( <span class="hljs-number">0x4C</span> )
+    <span class="hljs-keyword">const</span> textures_ptr = FILE.readInt32LE( <span class="hljs-number">0x50</span> )
+
+    <span class="hljs-keyword">const</span> object_amount = FILE.readInt32LE( <span class="hljs-number">0x54</span> )
+    <span class="hljs-keyword">const</span> objects = []
+    <span class="hljs-keyword">let</span> object_offset = FILE.readInt32LE( <span class="hljs-number">0x58</span> )
+    <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span> ; i &lt; object_amount ; i++ ) {
+        <span class="hljs-keyword">const</span> object = parseObject( FILE, object_offset )
+
+        objects.push( object )
+        objects.sort( <span class="hljs-function">(<span class="hljs-params"> a, b </span>) =></span> a.object_index &lt; b.object_index ? <span class="hljs-number">-1</span> : <span class="hljs-number">1</span> )
+        object_offset += object.object_size
+    }
+
+    <span class="hljs-keyword">return</span> {
+        object_meta_amount,
+        <span class="hljs-attr">object_meta</span>: [ ...new <span class="hljs-built_in">Array</span>( object_meta_amount ) ]
+            .map( <span class="hljs-function">(<span class="hljs-params"> _, index </span>) =></span> {
+                <span class="hljs-keyword">return</span> {
+                    <span class="hljs-attr">object_meta_index</span>: index,
+                    ...parseObjectMeta( FILE, <span class="hljs-number">0x5C</span> + index * <span class="hljs-number">0x2C</span> )
+                }
+            } ),
+
+        <span class="hljs-attr">textures_ptr</span>: formatPointer( textures_ptr ),
+        texture_amount,
+        <span class="hljs-attr">texture_ids</span>: [ ...new <span class="hljs-built_in">Array</span>( texture_amount ) ]
+            .map( <span class="hljs-function">(<span class="hljs-params"> _, index </span>) =></span> {
+                <span class="hljs-keyword">return</span> FILE.readInt16LE( textures_ptr + index * <span class="hljs-number">0xC</span> )
+            } ),
+
+        object_amount,
+
+        objects
+    }
+}
+</code></pre> <h2><strong>Additional notes</strong></h2> <ul><li>I'm not sure what was the coordinate system I was dealing with, but to make the ships appear correctly in <strong>Windows 3D viewer</strong>, I had to flip vertex coordinates that I considered to be <strong>X</strong> and <strong>Y</strong>.</li> <li><strong>Some of the textures are transparent</strong> and Playstation has several modes of rendering transparent textures. Because of the latter, <strong>I can't handle transparency properly until I figure out if there's any info on the model that switches transparency mode.</strong> For now, it's not too difficult to make required PNG textures transparent manually.</li> <li>I'm interested in ripping all models from <strong>Colony Wars: Vengeance</strong> and original <strong>Colony Wars</strong> in a similar manner.</li> <li>The mission scripts are very interesting because they can be edited, <a href="https://twitter.com/suxinjke/status/1121110809688641536">I already tried changing little bits</a> and it works. I wonder if it's possible to make some difficult Gauntlet-like mission in space.</li> <li><a href="https://archive.org/stream/GDM_August_2000#page/n31/mode/2up">An old gaming magazine from 2000s</a> mentions that the team was using <strong>Softimage 3D 3.8</strong>. I also found a <a href="https://silenthillcommunity.com/viewtopic.php?f=3335&t=438099">thread about ripping <strong>Silent Hill</strong> content</a> that has attempts to read models using this ancient software. <em>I wonder if this could be applied to <strong>Red Sun</strong> models?</em></li> <li>There were some models that don't seem to be used anywhere and even an easter egg uncovered, I want to document on this later.</li></ul> <p>I'm finishing this note rather abruptly, there isn't much point in describing how to convert <strong>TIM textures</strong> or make your own <strong>OBJ files</strong> which is still an important part of ripping process.</p> <h2><strong>Links</strong></h2> <ul><li><a href="https://github.com/suXinjke/RedSunRipper"><strong>RedSunRipper</strong> repository - full code</a></li> <li><a href="https://www.dropbox.com/s/qhnmt515sr5ccz8/RedSun_Models.7z?dl=0">All ripped <strong>Red Sun</strong> models</a></li> <li><a href="https://www.models-resource.com/playstation/colonywarsvengeance/model/22861/"><strong>Hex</strong> model on The VG Resource</a></li> <li><a href="https://www.vg-resource.com/thread-31861.html"><strong>Original Red Sun showcase</strong> on The VG Resource</a></li> <li><a href="/red_sun/"><strong>Red Sun menu</strong> tribute</a></li> <li><a href="https://twitter.com/search?f=tweets&vertical=default&q=from%3Asuxinjke%20%23ColonyWars&src=unkn">My #ColonyWars tweets with some progress and model screenshots</a></li> <li><a href="https://phoboslab.org/log/2015/04/reverse-engineering-wipeout-psx"><strong>Reverse Engineering Wipeout</strong> - blog post that also details similar experience</a></li></ul></div></div></div></div></div><script>window.__NUXT__={layout:"default",data:[{}],error:null,serverRendered:!0}</script><script src="/_nuxt/a57c9a774c2f20e18513.js" defer></script><script src="/_nuxt/ab7767447558a7a92325.js" defer></script><script src="/_nuxt/f24ddc045dec8bd7c76f.js" defer></script><script src="/_nuxt/21dbf12015bea829ca87.js" defer></script><script src="/_nuxt/043483ecaf3bd9fb1662.js" defer></script>
+  </body>
+</html>
