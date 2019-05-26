@@ -4,10 +4,17 @@
         <title>suxin.space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Sun, 19 May 2019 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 25 May 2019 00:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>https://github.com/nuxt-community/feed-module</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Vue Controlled Input - using v-model and watch]]></title>
+            <link>https://suxin.space/notes/vue-controlled-input/</link>
+            <guid>https://suxin.space/notes/vue-controlled-input/</guid>
+            <pubDate>Sat, 25 May 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Lampshading the way to make an input actually controlled while keeping it simple with v-model and watch.]]></description>
+        </item>
         <item>
             <title><![CDATA[Reverse engineering Colony Wars Playstation models]]></title>
             <link>https://suxin.space/notes/cw-reverse-engineering-models/</link>
