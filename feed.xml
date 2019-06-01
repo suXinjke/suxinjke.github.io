@@ -4,10 +4,17 @@
         <title>suxin.space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Mon, 27 May 2019 16:47:36 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 01 Jun 2019 03:54:44 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Gridsome Feed Plugin</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Colony Wars Red Sun oddities and cut content]]></title>
+            <link>https://suxin.space/notes/cw3-oddities-and-cut-content</link>
+            <guid>https://suxin.space/notes/cw3-oddities-and-cut-content</guid>
+            <pubDate>Sat, 01 Jun 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Easter egg torpedo, unused models and amusing text found in extracted files of Colony Wars Red Sun, a Playstation space dogfighting game.]]></description>
+        </item>
         <item>
             <title><![CDATA[Vue Controlled Input - using v-model and watch]]></title>
             <link>https://suxin.space/notes/vue-controlled-input</link>
