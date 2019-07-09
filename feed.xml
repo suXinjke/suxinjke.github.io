@@ -4,10 +4,17 @@
         <title>suXin space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Sat, 29 Jun 2019 12:57:30 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 09 Jul 2019 13:18:38 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Gridsome Feed Plugin</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Nuxt Markdown blogs are potentially bloated and inconvenient]]></title>
+            <link>https://suxin.space/notes/nuxt-bloated-markdown-blogs</link>
+            <guid>https://suxin.space/notes/nuxt-bloated-markdown-blogs</guid>
+            <pubDate>Tue, 09 Jul 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Most of the Nuxt Markdown blogging solutions lead to bloated bundle size and up to four copies of your content. All while the setup is also being more convoluted than it should. I suggest we should respect user's bandwidth and either fix the issue, or just use Gatsby/Gridsome.]]></description>
+        </item>
         <item>
             <title><![CDATA[Colony Wars Red Sun oddities and cut content]]></title>
             <link>https://suxin.space/notes/cw3-oddities-and-cut-content</link>
