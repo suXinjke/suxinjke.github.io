@@ -4,42 +4,42 @@
         <title>suXin space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Tue, 09 Jul 2019 13:39:29 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 20 Oct 2019 15:10:27 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Gridsome Feed Plugin</generator>
         <language>en</language>
         <item>
             <title><![CDATA[Nuxt Markdown blogs are potentially bloated and inconvenient]]></title>
-            <link>https://suxin.space/notes/nuxt-bloated-markdown-blogs</link>
-            <guid>https://suxin.space/notes/nuxt-bloated-markdown-blogs</guid>
+            <link>https://suxin.space/notes/nuxt-bloated-markdown-blogs/</link>
+            <guid>https://suxin.space/notes/nuxt-bloated-markdown-blogs/</guid>
             <pubDate>Tue, 09 Jul 2019 00:00:00 GMT</pubDate>
             <description><![CDATA[Most of the Nuxt Markdown blogging solutions lead to bloated bundle size and up to four copies of your content. All while the setup is also being more convoluted than it should. I suggest we should respect user's bandwidth and either fix the issue, or just use Gatsby/Gridsome.]]></description>
         </item>
         <item>
             <title><![CDATA[Colony Wars Red Sun oddities and cut content]]></title>
-            <link>https://suxin.space/notes/cw3-oddities-and-cut-content</link>
-            <guid>https://suxin.space/notes/cw3-oddities-and-cut-content</guid>
+            <link>https://suxin.space/notes/cw3-oddities-and-cut-content/</link>
+            <guid>https://suxin.space/notes/cw3-oddities-and-cut-content/</guid>
             <pubDate>Sat, 01 Jun 2019 00:00:00 GMT</pubDate>
             <description><![CDATA[Easter egg torpedo, unused models and amusing text found in extracted files of Colony Wars Red Sun, a Playstation space dogfighting game.]]></description>
         </item>
         <item>
             <title><![CDATA[Vue Controlled Input - using v-model and watch]]></title>
-            <link>https://suxin.space/notes/vue-controlled-input</link>
-            <guid>https://suxin.space/notes/vue-controlled-input</guid>
+            <link>https://suxin.space/notes/vue-controlled-input/</link>
+            <guid>https://suxin.space/notes/vue-controlled-input/</guid>
             <pubDate>Sat, 25 May 2019 00:00:00 GMT</pubDate>
             <description><![CDATA[Lampshading the way to make an input actually controlled while keeping it simple with v-model and watch.]]></description>
         </item>
         <item>
             <title><![CDATA[Reverse engineering Colony Wars Playstation models]]></title>
-            <link>https://suxin.space/notes/cw-reverse-engineering-models</link>
-            <guid>https://suxin.space/notes/cw-reverse-engineering-models</guid>
+            <link>https://suxin.space/notes/cw-reverse-engineering-models/</link>
+            <guid>https://suxin.space/notes/cw-reverse-engineering-models/</guid>
             <pubDate>Sun, 19 May 2019 00:00:00 GMT</pubDate>
             <description><![CDATA[Sharing my first ever experience of extracting and reverse engineering 3D models from favorite Playstation game.]]></description>
         </item>
         <item>
             <title><![CDATA[Making of this website]]></title>
-            <link>https://suxin.space/notes/about-this-website</link>
-            <guid>https://suxin.space/notes/about-this-website</guid>
+            <link>https://suxin.space/notes/about-this-website/</link>
+            <guid>https://suxin.space/notes/about-this-website/</guid>
             <pubDate>Wed, 01 May 2019 00:00:00 GMT</pubDate>
             <description><![CDATA[Thoughts on making a personal website and how it happened]]></description>
         </item>
