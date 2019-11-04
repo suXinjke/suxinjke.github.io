@@ -4,10 +4,17 @@
         <title>suXin space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Sun, 20 Oct 2019 15:10:27 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 04 Nov 2019 18:21:37 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Gridsome Feed Plugin</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Making of Solo Sheet Torres]]></title>
+            <link>https://suxin.space/notes/making-of-solo-sheet-torres/</link>
+            <guid>https://suxin.space/notes/making-of-solo-sheet-torres/</guid>
+            <pubDate>Mon, 04 Nov 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[I've put the most evil character of Ace Combat series into Morgan. The work includes abusing Cheat Engine and direct recording of voicelines.]]></description>
+        </item>
         <item>
             <title><![CDATA[Nuxt Markdown blogs are potentially bloated and inconvenient]]></title>
             <link>https://suxin.space/notes/nuxt-bloated-markdown-blogs/</link>
