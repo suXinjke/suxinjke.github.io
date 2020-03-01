@@ -4,10 +4,17 @@
         <title>suXin space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Mon, 04 Nov 2019 18:21:37 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 01 Mar 2020 14:26:12 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Gridsome Feed Plugin</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Reverse engineering Colony Wars Vengeance Playstation models]]></title>
+            <link>https://suxin.space/notes/cw-vengeance-reverse-engineering-models/</link>
+            <guid>https://suxin.space/notes/cw-vengeance-reverse-engineering-models/</guid>
+            <pubDate>Sun, 01 Mar 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[Several years after ripping my first Playstation model, it's time to revisit the game where it came from]]></description>
+        </item>
         <item>
             <title><![CDATA[Making of Solo Sheet Torres]]></title>
             <link>https://suxin.space/notes/making-of-solo-sheet-torres/</link>
