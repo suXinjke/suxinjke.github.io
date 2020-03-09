@@ -4,10 +4,17 @@
         <title>suXin space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Sun, 01 Mar 2020 14:26:12 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 09 Mar 2020 14:40:33 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Gridsome Feed Plugin</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Colony Wars Vengeance oddities and cut content]]></title>
+            <link>https://suxin.space/notes/cw2-oddities-and-cut-content/</link>
+            <guid>https://suxin.space/notes/cw2-oddities-and-cut-content/</guid>
+            <pubDate>Mon, 09 Mar 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[Unused skins and ships, and also small insights into development process of Colony Wars Vengeance, a Playstation space dogfighting game.]]></description>
+        </item>
         <item>
             <title><![CDATA[Reverse engineering Colony Wars Vengeance Playstation models]]></title>
             <link>https://suxin.space/notes/cw-vengeance-reverse-engineering-models/</link>
