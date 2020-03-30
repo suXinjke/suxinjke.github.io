@@ -4,10 +4,17 @@
         <title>suXin space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Sat, 14 Mar 2020 11:30:44 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 30 Mar 2020 15:30:25 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Gridsome Feed Plugin</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Finding and calling Richard Burns Rally play replay function]]></title>
+            <link>https://suxin.space/notes/rbr-play-replay/</link>
+            <guid>https://suxin.space/notes/rbr-play-replay/</guid>
+            <pubDate>Mon, 30 Mar 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[In this note I want to focus on my thought process for a trivial reverse engineering problem - how do I find the function I want and call it from the code I have control over?]]></description>
+        </item>
         <item>
             <title><![CDATA[Colony Wars Vengeance oddities and cut content]]></title>
             <link>https://suxin.space/notes/cw2-oddities-and-cut-content/</link>
