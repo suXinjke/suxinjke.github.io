@@ -4,10 +4,17 @@
         <title>suXin space</title>
         <link>https://suxin.space/notes/</link>
         <description>Getting things done and sharing how</description>
-        <lastBuildDate>Mon, 30 Mar 2020 15:30:25 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 05 Apr 2020 09:48:46 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Gridsome Feed Plugin</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Baby's first XOR Cipher in Colin McRae Rally 04]]></title>
+            <link>https://suxin.space/notes/babys-first-xor-cipher-cmr04/</link>
+            <guid>https://suxin.space/notes/babys-first-xor-cipher-cmr04/</guid>
+            <pubDate>Sun, 05 Apr 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[I was asked to look into resource file with codriver lines but they turned out to be weird]]></description>
+        </item>
         <item>
             <title><![CDATA[Finding and calling Richard Burns Rally play replay function]]></title>
             <link>https://suxin.space/notes/rbr-play-replay/</link>
