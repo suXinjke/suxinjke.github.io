@@ -1,0 +1,19 @@
+name: Deploy cosmic.io
+on:
+  workflow_call:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [deploy_cosmic]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup application
+        uses: suXinjke/github-actions/build-node-application@master
+        with:
+          repository: suXinjke/cosmic.io
+      - name: Upload the application
+        uses: suXinjke/github-actions/push-copy@master
+        with:
+          source-path: remote/dist/.
+          target-sub-path: cosmic-io

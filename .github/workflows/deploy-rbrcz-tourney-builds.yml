@@ -1,0 +1,20 @@
+name: Deploy RBRCZ Tourney Builds
+on:
+  workflow_call:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [deploy_rbrcz_tourney_builds]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download target repository
+        uses: actions/checkout@v3
+        with:
+          repository: suXinjke/RBRCZTourneyCreatorRevampedBuilds
+          path: remote
+      - name: Upload the application
+        uses: suXinjke/github-actions/push-copy@master
+        with:
+          source-path: remote/*
+          target-sub-path: rbrcz_tourney_revamped

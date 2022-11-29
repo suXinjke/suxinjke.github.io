@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>suXin space</title>
+        <link>https://suxin.space/notes/</link>
+        <description>Getting things done and sharing how</description>
+        <lastBuildDate>Tue, 29 Nov 2022 13:37:46 GMT</lastBuildDate>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <generator>Gridsome Feed Plugin</generator>
+        <language>en</language>
+        <item>
+            <title><![CDATA[Reflecting on motivation and passion]]></title>
+            <link>https://suxin.space/notes/reflecting-on-motivation-and-passion/</link>
+            <guid>https://suxin.space/notes/reflecting-on-motivation-and-passion/</guid>
+            <pubDate>Wed, 08 Sep 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[I was motivated to write on everything I think of motivational issues because of my lack of motivation to write anything a year since.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Baby's first XOR Cipher in Colin McRae Rally 04]]></title>
+            <link>https://suxin.space/notes/babys-first-xor-cipher-cmr04/</link>
+            <guid>https://suxin.space/notes/babys-first-xor-cipher-cmr04/</guid>
+            <pubDate>Sun, 05 Apr 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[I was asked to look into resource file with codriver lines but they turned out to be weird]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Finding and calling Richard Burns Rally play replay function]]></title>
+            <link>https://suxin.space/notes/rbr-play-replay/</link>
+            <guid>https://suxin.space/notes/rbr-play-replay/</guid>
+            <pubDate>Mon, 30 Mar 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[In this note I want to focus on my thought process for a trivial reverse engineering problem - how do I find the function I want and call it from the code I have control over?]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Colony Wars Vengeance oddities and cut content]]></title>
+            <link>https://suxin.space/notes/cw2-oddities-and-cut-content/</link>
+            <guid>https://suxin.space/notes/cw2-oddities-and-cut-content/</guid>
+            <pubDate>Mon, 09 Mar 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[Unused skins and ships, and also small insights into development process of Colony Wars Vengeance, a Playstation space dogfighting game.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Reverse engineering Colony Wars Vengeance Playstation models]]></title>
+            <link>https://suxin.space/notes/cw-vengeance-reverse-engineering-models/</link>
+            <guid>https://suxin.space/notes/cw-vengeance-reverse-engineering-models/</guid>
+            <pubDate>Sun, 01 Mar 2020 00:00:00 GMT</pubDate>
+            <description><![CDATA[Several years after ripping my first Playstation model, it's time to revisit the game where it came from]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Making of Solo Sheet Torres]]></title>
+            <link>https://suxin.space/notes/making-of-solo-sheet-torres/</link>
+            <guid>https://suxin.space/notes/making-of-solo-sheet-torres/</guid>
+            <pubDate>Mon, 04 Nov 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[I've put the most evil character of Ace Combat series into Morgan. The work includes abusing Cheat Engine and direct recording of voicelines.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Nuxt Markdown blogs are potentially bloated and inconvenient]]></title>
+            <link>https://suxin.space/notes/nuxt-bloated-markdown-blogs/</link>
+            <guid>https://suxin.space/notes/nuxt-bloated-markdown-blogs/</guid>
+            <pubDate>Tue, 09 Jul 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Most of the Nuxt Markdown blogging solutions lead to bloated bundle size and up to four copies of your content. All while the setup is also being more convoluted than it should. I suggest we should respect user's bandwidth and either fix the issue, or just use Gatsby/Gridsome.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Colony Wars Red Sun oddities and cut content]]></title>
+            <link>https://suxin.space/notes/cw3-oddities-and-cut-content/</link>
+            <guid>https://suxin.space/notes/cw3-oddities-and-cut-content/</guid>
+            <pubDate>Sat, 01 Jun 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Easter egg torpedo, unused models and amusing text found in extracted files of Colony Wars Red Sun, a Playstation space dogfighting game.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Vue Controlled Input - using v-model and watch]]></title>
+            <link>https://suxin.space/notes/vue-controlled-input/</link>
+            <guid>https://suxin.space/notes/vue-controlled-input/</guid>
+            <pubDate>Sat, 25 May 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Lampshading the way to make an input actually controlled while keeping it simple with v-model and watch.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Reverse engineering Colony Wars Playstation models]]></title>
+            <link>https://suxin.space/notes/cw-reverse-engineering-models/</link>
+            <guid>https://suxin.space/notes/cw-reverse-engineering-models/</guid>
+            <pubDate>Sun, 19 May 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Sharing my first ever experience of extracting and reverse engineering 3D models from favorite Playstation game.]]></description>
+        </item>
+        <item>
+            <title><![CDATA[Making of this website]]></title>
+            <link>https://suxin.space/notes/about-this-website/</link>
+            <guid>https://suxin.space/notes/about-this-website/</guid>
+            <pubDate>Wed, 01 May 2019 00:00:00 GMT</pubDate>
+            <description><![CDATA[Thoughts on making a personal website and how it happened]]></description>
+        </item>
+    </channel>
+</rss>

@@ -1,0 +1,22 @@
+name: Deploy RBRCZ Tourney Revamped prototype
+on:
+  workflow_call:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [deploy_rbrcz_prototype]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup application
+        uses: suXinjke/github-actions/build-node-application@master
+        with:
+          repository: suXinjke/RBRCZTourneyCreatorRevamped
+          ref: 7a57b128eeec5ba46d7879b003d64f62a8d5f3f7
+          fetch-depth: 0
+          node-version: 10
+      - name: Upload the application
+        uses: suXinjke/github-actions/push-copy@master
+        with:
+          source-path: remote/dist/.
+          target-sub-path: rbrcz_prototype
