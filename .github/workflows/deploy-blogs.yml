@@ -20,9 +20,8 @@ jobs:
           target-sub-path: .
           cleanup: false
           pre-push-run: |
-            rm -rf target/404
-            rm -rf target/assets
-            rm -rf target/img
+            rm -rf target/images
+            rm -rf target/fonts
             rm -rf target/items
             rm -rf target/notes
             find target/. -maxdepth 1 -type f -delete
