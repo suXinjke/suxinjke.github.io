@@ -30,7 +30,7 @@ world.addBody(groundBody)
 
 const kiwis = []
 
-loader.load( '/kiwi.gltf', function ( gltf ) {
+loader.load( './kiwi.gltf', function ( gltf ) {
     for ( let i = 0 ; i < 10 ; i++ ) {
         const sphereBody = new CANNON.Body({
             mass: 1000,
