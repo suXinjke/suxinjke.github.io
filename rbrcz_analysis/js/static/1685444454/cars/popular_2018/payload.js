@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/cars/popular_2018", {data:[{}],fetch:{},mutations:void 0});

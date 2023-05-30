@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/drivers/reliability", {data:[{}],fetch:{},mutations:void 0});

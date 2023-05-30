@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/tournaments/by_physics", {data:[{}],fetch:{},mutations:void 0});
