@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Tracking down pointers for PlayStation games using debuggers and Ghidra - suXin space</title>
+    <meta name="og:title" content="Tracking down pointers for PlayStation games using debuggers and Ghidra - suXin space"/>
+    <meta name="og:description" content="Reverse Engineering pointer tracking examples for Playstation emulators specifically made for RetroAchievements developers, also including Ghidra decompiler usage"/>
+    <meta name="og:url" content="https://suxin.space/notes/tracking-down-playstation-pointers-using-debuggers-ghidra"/>
+    <meta name="og:image" content="https://suxin.space/notes/tracking-down-playstation-pointers-using-debuggers-ghidra/ee.jpg"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="Tracking down pointers for PlayStation games using debuggers and Ghidra - suXin space"/>
+    <meta name="twitter:description" content="Reverse Engineering pointer tracking examples for Playstation emulators specifically made for RetroAchievements developers, also including Ghidra decompiler usage"/>
+    <meta name="twitter:site" content="@suxinjke"/>
+    <meta name="twitter:image" content="https://suxin.space/notes/tracking-down-playstation-pointers-using-debuggers-ghidra/ee.jpg"/>
+    <link rel="stylesheet" href="/normalize.min.css">
+    <link rel="stylesheet" href="/fonts/fonts.css">
+    <link rel="stylesheet" href="/main.css?t=1709631216356">
+    <link rel="stylesheet" href="/notes/note.css?t=1709631216356">
+    <link rel="stylesheet" href="/prism-github.css?t=1709631216356">
+    <script src="/main.js?t=1709631216356" defer=""></script>
+  </head>
+  <body>
+    <header class="header"><nav class="nav header__nav"><a href="/" class="nav__link"><div class="header-text"><div class="header-text__icon-container"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path fill="currentColor" d="M280.37 148.26L96 300.11V464a16 16 0 0 0 16 16l112.06-.29a16 16 0 0 0 15.92-16V368a16 16 0 0 1 16-16h64a16 16 0 0 1 16 16v95.64a16 16 0 0 0 16 16.05L464 480a16 16 0 0 0 16-16V300L295.67 148.26a12.19 12.19 0 0 0-15.3 0zM571.6 251.47L488 182.56V44.05a12 12 0 0 0-12-12h-56a12 12 0 0 0-12 12v72.61L318.47 43a48 48 0 0 0-61 0L4.34 251.47a12 12 0 0 0-1.6 16.9l25.5 31A12 12 0 0 0 45.15 301l235.22-193.74a12.19 12.19 0 0 1 15.3 0L530.9 301a12 12 0 0 0 16.9-1.6l25.5-31a12 12 0 0 0-1.7-16.93z"/></svg></div><div class="header-text__content" title="Home"><h2 class="header-text__primary uppercase">Home</h2></div></div></a><a href="/notes/" class="nav__link active expand"><div class="header-text"><div class="header-text__icon-container"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path fill="currentColor" d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"/></svg></div><div class="header-text__content" title="Notes - Tracking down pointers for PlayStation games using debuggers and Ghidra"><h3 class="header-text__secondary">Tracking down pointers for PlayStation games using debuggers and Ghidra</h3><h2 class="header-text__primary uppercase">Notes</h2></div></div></a></nav><h2 class="header__logo">suXin space</h2></header><main class="readable note"><h1><strong>Tracking down pointers for PlayStation games using debuggers and Ghidra</strong></h1><h3 class="uppercase">Mar 05 2024</h3><ul class="table-of-contents"><li><a href="#preface">Preface</a></li><li><a href="#the-path-of-least-resistance">The path of least resistance</a></li><li><a href="#learn-programming-basics-and-how-programs-execute">Learn programming basics and how programs execute</a></li><li style="padding-left: 1rem"><a href="#learn-c-or-c-and-debugging-your-programs">Learn C or C++ and debugging your programs</a></li><li style="padding-left: 1rem"><a href="#c-and-c-learning-resources">C and C++ learning resources</a></li><li style="padding-left: 1rem"><a href="#small-code-and-debugger-exhibition">Small code and debugger exhibition</a></li><li style="padding-left: 1rem"><a href="#understand-the-role-of-cpu">Understand the role of CPU</a></li><li style="padding-left: 1rem"><a href="#mips">MIPS</a></li><li><a href="#pointer-psx-game-pcsx-redux">Pointer, PSX game, PCSX-Redux</a></li><li style="padding-left: 1rem"><a href="#debugger-usage">Debugger usage</a></li><li style="padding-left: 1rem"><a href="#decompiler-usage">Decompiler usage</a></li><li><a href="#pointer-x2-ps2-game-pcsx2">Pointer x2, PS2 game, PCSX2</a></li><li style="padding-left: 1rem"><a href="#debugger-usage-1">Debugger Usage</a></li><li><a href="#pointer-x4-ps2-game-pcsx2">Pointer x4, PS2 game, PCSX2</a></li><li style="padding-left: 1rem"><a href="#debugger-usage-2">Debugger usage</a></li><li style="padding-left: 1rem"><a href="#decompiler-usage-1">Decompiler usage</a></li><li><a href="#pointer-psp-game-ppsspp">Pointer, PSP game, PPSSPP</a></li><li style="padding-left: 1rem"><a href="#debugger-usage-3">Debugger usage</a></li><li style="padding-left: 1rem"><a href="#decompiler-usage-2">Decompiler usage</a></li><li style="padding-left: 1rem"><a href="#decompiler--debugger-usage">Decompiler + Debugger usage</a></li><li><a href="#appendix">Appendix</a></li><li style="padding-left: 1rem"><a href="#installing-ghidra">Installing Ghidra</a></li><li style="padding-left: 1rem"><a href="#installing-ghidra-extensions">Installing Ghidra Extensions</a></li><li style="padding-left: 1rem"><a href="#using-pcsx2-with-raintegration">Using PCSX2 with RAIntegration</a></li><li style="padding-left: 1rem"><a href="#using-pcsx2-with-cheat-engine">Using PCSX2 with Cheat Engine</a></li><li style="padding-left: 1rem"><a href="#dumping-pcsx2-memory-with-save-states">Dumping PCSX2 memory with save states</a></li><li style="padding-left: 1rem"><a href="#dumping-pcsx2-memory-with-cheat-engine">Dumping PCSX2 memory with Cheat Engine</a></li><li style="padding-left: 1rem"><a href="#additional-resources">Additional resources</a></li></ul><div class="note__content"><h2 id="preface"><strong>Preface</strong><a href="#preface" class="anchor-link"><span>¶</span></a></h2><p>Developers at <a href="https://retroachievements.org/">RetroAchievements</a> sometimes have to deal with <a href="https://en.wikipedia.org/wiki/Pointer_(computer_programming)">Pointers</a> - variables that contain addresses to data you&#39;d be interested in while creating achievement logic. Tracking down where pointer originates from is not always easy.</p>
+<p>In this blogpost I want to make sense of everything I know when it comes to tracking down pointers, and do it in text and image format. This material is aimed towards RetroAchievement developers, so there might be some references to things only those developers are familiar with, but you may find it valuable too.</p>
+<p>In addition to various emulator debuggers, this blogpost also explores using <a href="https://github.com/NationalSecurityAgency/ghidra/">Ghidra</a> for it&#39;s decompiler, which might be interesting to beginners learning such tools and reverse engineering.</p>
+<details class="spoiler spoiler_question"><summary class="spoiler__header" id="what-things-only-retroachievements-developers-are-familiar-with"><a href="#what-things-only-retroachievements-developers-are-familiar-with"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> What things only RetroAchievements developers are familiar with?</summary><section><p><p><a href="https://github.com/RetroAchievements/RAIntegration/"><strong>RAIntegration</strong></a> - toolkit that integrates with emulators and allows to search RAM for value changes, to bookmark RAM addresses and track values at those addresses, to define achievement logic, upload achievements to server.</p>
+<ul>
+<li><strong>Memory Inspector</strong> - allows to explore RAM and search for value changes there</li>
+<li><strong>Code Note</strong> - a comment put on RAM address and uploaded to server, it&#39;s available for all RetroAchievements developers to read and edit</li>
+</ul>
+<p><a href="https://github.com/Jamiras/RATools/"><strong>RATools</strong></a> - Domain Specific Language and toolkit to automate generation of achievement logic.</p>
+<p><a href="https://github.com/RetroAchievements/rcheevos"><strong>rcheevos</strong></a> - portable C library for emulators so these can execute achievement logic.</p>
+<p><strong>RAM digging</strong> - the way community calls the process of searching for required values in RAM and making Code Notes for them. Similar to searching for values in Cheat Engine.</p>
+</p></section></details><p>If you never programmed before and/or don&#39;t have much experience with achievement creation, understand: getting a grasp on this will be difficult - that&#39;s natural. This requires perseverance and revisiting the topics you&#39;re confused about, combined with seeking and reading/watching different learning material that explains same topics. Also understand there&#39;s no guarantee the examples you read about will be similar to the actual work you deal with: most games are unique and the main goal is to cultivate your inner hacker and intuition to make good guesses earlier. The guesses part ain&#39;t a joke, as you&#39;re going into reverse engineering territory, both <em>educated</em> and regular guesses become part of the work.</p>
+<p>If you feel like it, check out this video: <a href="https://www.youtube.com/watch?v=0_Eif2qGK7I">Learn Reverse Engineering (for hacking games)</a> - it gives a short overview of what you will be dealing with, the examples are for PC games though.</p>
+<h2 id="the-path-of-least-resistance"><strong>The path of least resistance</strong><a href="#the-path-of-least-resistance" class="anchor-link"><span>¶</span></a></h2><p>This section is mostly a reminder on how one could <em>atleast try</em> dealing with pointers without learning the complex stuff, in RAIntegration:</p>
+<ol>
+<li>Find the address of the value, write it down, make Save State 1</li>
+<li>Restart the game, or start at different level - whatever that will make the value appear at different address. Find the address of the value, write it down, make Save State 2</li>
+<li>Calculate the difference between the addresses. For example: if Save State 1 had value at <code>0x1717D8</code> and Save State 2 had value at <code>0x178CA4</code>, the difference is <code>0x178CA4 - 0x1717D8 = 0x74CC</code></li>
+<li>Load Save State 1, make a new search for 32-bit (Aligned) values (my example is PSX so it takes that much)</li>
+<li>Load Save State 2, then do filter either by Last Value Plus or Last Value Minus, in my case I will have to go by <code>0x74CC</code> for Last Value Plus</li>
+<li>You get several candidates, one of them might be the pointer you seek, good luck<ul>
+<li>If you had Save State 3 with 3rd address, it could further help to lower amount of candidates. In my case some addresses also flickered and I could get rid of them</li>
+<li>I also recommend you pick addresses that result in lowest possible offsets</li>
+</ul>
+</li>
+</ol>
+<p><a href="https://www.youtube.com/watch?v=_gk0vYYlm-E">WilHiteWarrior&#39;s video</a> explains and demonstrates the steps above</p>
+<p>The <strong>Pointer Finder</strong> in RAIntegration also streamlines this process:</p>
+<ol>
+<li>Load Save State 1 - enter previously found address in State 1 and Capture it</li>
+<li>Load Save State 2 - enter previously found address in State 2 and Capture it</li>
+<li>I choose to Find 32-bit (aligned) values afterwards, and get similar results. Offsets look big but that&#39;s because of 0x80 prefix on the pointers.</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pointer-finder.png" target="_blank" rel="noopener"><img title="" src="./pointer-finder.png" /></a></div></div></p>
+<p>There&#39;s also another easy way that I often use instead of <em>finding by difference</em>, it doesn&#39;t require any save states:</p>
+<ol>
+<li>Find the address of the value, write it down (in my case it&#39;s <code>0x1717D8</code>)</li>
+<li>Begin the search of 32-bit (Aligned), then filter down by <code>Constant &lt;= 0x801717D8</code>, I have added the 0x80 prefix here because I&#39;m working with PSX</li>
+<li>Filter down by <code>Constant &gt;= 0x801710D8</code>, the constant here has value of 0x700 less than previous one.</li>
+<li>You get several candidates</li>
+</ol>
+<p>Understand the step 3 - I&#39;m merely trying to find a value that holds an address close to <code>0x801717D8</code>.</p>
+<p>You can tweak the offset to be smaller or bigger. Try smaller offsets if there&#39;s too many candidates, and bigger one if you didn&#39;t get anything.</p>
+<p>These methods work for simple cases: when it&#39;s just one static pointer. Once you start getting less trivial cases of pointers that lead to pointers - reverse engineering is preferred, which this blogpost will cover.</p>
+<h2 id="learn-programming-basics-and-how-programs-execute"><strong>Learn programming basics and how programs execute</strong><a href="#learn-programming-basics-and-how-programs-execute" class="anchor-link"><span>¶</span></a></h2><p>You may not like this part, but this is the foundation for later. It&#39;s essential to understand why things appear the way they are, otherwise you risk being completely clueless and unproductive for all the wrong reasons. Plenty of blogposts and videos that cover reverse engineering and game hacking will also note that programming background is required. <strong>I&#39;m not opposed to you skipping this section</strong>, but only as long as you&#39;re aware that you may need to take steps back and learn fundamentals, fill whatever knowledge gaps you realised you have and prevent you from moving forward.</p>
+<h3 id="learn-c-or-c-and-debugging-your-programs"><strong>Learn C or C++ and debugging your programs</strong><a href="#learn-c-or-c-and-debugging-your-programs" class="anchor-link"><span>¶</span></a></h3><p>The general goal here is to get a taste and feel of programming basics. This is important because you will get first hand experience with actually making programs that you deal with when doing <em>RAM digging</em> (games are programs too). You will personally define which data to store and how to store it (that includes producing pointers yourself), you will learn how to make reusable functions for your program (tons of which will be encountered during debugging later), you will learn to debug your own program (which will teach you debugger basics that will transfer later). Also by learning programming basics you will find it easier to learn <a href="https://github.com/Jamiras/RATools/">RATools</a> afterwards if you need it.</p>
+<p>It doesn&#39;t matter much if you choose C or C++ here. I recommend these because you need to stick to lower level programming: it&#39;s less abstract, you have control over memory allocation, there are lots of learning resources for both languages, and because decompilers produce C code specifically. Learning <em>basics</em> of C++ is roughly same as learning basics of C, you don&#39;t even need to learn all the parts that make C++ infamous.</p>
+<p><strong>Here&#39;s the roadmap</strong>, pay attention to numeric links that may contain learning material:</p>
+<ul>
+<li><p>Pick C or C++, learn to how to set it up</p>
+<ul>
+<li>My personal choice is Windows + <a href="https://visualstudio.microsoft.com/vs/community/">Visual Studio Community Edition</a> and C++ which takes relatively a lot of disk space, some examples will involve that setup <a href="https://www.learncpp.com/cpp-tutorial/installing-an-integrated-development-environment-ide/">[1]</a> <a href="https://code.visualstudio.com/docs/languages/cpp">[2]</a> <a href="https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation">[3]</a></li>
+<li>For simplicity, stick to making Debug build for x86 (32 bit systems), not x86_64 (64 bit systems)</li>
+<li>You can choose to get started with any online editor too, but it&#39;s unlikely to have debugger support</li>
+</ul>
+</li>
+<li><p>Be able to compile and run your first &quot;Hello, World!&quot; program, that&#39;s a proof you&#39;ve got everything set up correctly <a href="https://www.learncpp.com/cpp-tutorial/compiling-your-first-program/">[1]</a></p>
+</li>
+<li><p>Learn to define local and global variables and what you can do with them. Learn that variables have different data types: integers of various sizes (remember 8-bit, 16-bit, 32-bit in RAIntegration?), strings, floating point numbers</p>
+<ul>
+<li>Understand that everything you have seen in Memory Inspector, any data at any address can be <em>interpreted</em> as those data types</li>
+<li>Optional: learn bitwise operators and bitmasks if you encountered them when making achievements. If you ever had to make conditions that target Bit0, Bit1 and so on - those likely were part of bitmask. Reminder that this also requires understanding binary <a href="https://www.programiz.com/c-programming/bitwise-operators">[1]</a> <a href="https://www.learn-c.org/en/Bitmasks">[2]</a></li>
+</ul>
+</li>
+<li><p>Learn basic control flow: conditional <em>if statements</em> and logical operators (AND/OR/NOT)</p>
+</li>
+<li><p>Learn loops: <em>for loop</em>, <em>while loop</em></p>
+</li>
+<li><p>Learn to define your own functions so the code can be reused</p>
+</li>
+<li><p>Learn what variable scope is: how it can be scoped locally to a function, locally to <code>{}</code> blocks, or scoped globally</p>
+</li>
+<li><p>Learn to define arrays, iterate them using loops</p>
+</li>
+<li><p>Learn to define structs (structures)</p>
+<ul>
+<li>Make array of some struct</li>
+</ul>
+</li>
+<li><p>Learn debugger <a href="https://www.learncpp.com/cpp-tutorial/using-an-integrated-debugger-stepping/">[1]</a> <a href="https://learn.microsoft.com/en-us/visualstudio/debugger/getting-started-with-the-debugger-cpp">[2]</a></p>
+<ul>
+<li>How to run it given your setup</li>
+<li>What a breakpoint is and how to set it up</li>
+<li>How to execute your program step by step, how to <em>step out of function</em></li>
+<li>Learn how to inspect values of your variables, arrays, structs, you can also change values when program execution is paused</li>
+<li>Notice the presence of call stack, which is useful when you&#39;re several functions deep</li>
+<li>Most of what you learn here will transition to using debuggers in emulators, the major change will be about programming language and code</li>
+</ul>
+</li>
+<li><p>Learn that if you haven&#39;t been using <em>malloc</em> or <em>new operator</em> yet - you&#39;ve been implicitly allocating local variables <em>on stack segment</em>, and static/global variables are stored in their own <em>data segment</em> <a href="https://www.javatpoint.com/memory-layout-in-c">[1]</a></p>
+<ul>
+<li>Learn that stack size is limited, hence the famous &quot;stack overflow&quot; <a href="https://stackoverflow.com/questions/1825964/c-c-maximum-stack-size-of-program-on-mainstream-oses">[1]</a></li>
+<li>Notice that data segment can be properly defined only during compilation step: that&#39;s when it&#39;s clear which data is static/global and which isn&#39;t</li>
+<li>Now, the bigger amount of data, like whatever you see moving around in your video games in extremely varied amounts - have to go somewhere else, that segment is called <em>the heap</em></li>
+<li>This is the moment when you should realise why certain address ranges <em>feel</em> stable and some not during achievement development. <a href="https://static.javatpoint.com/cpages/images/memory-layout-in-c.png">Just like in diagram</a>, the lower addresses are code, then static/global variables, then eventually comes the <em>volatile</em> heap. It&#39;s important to learn having a rough feel for heap segments and which memory region they occupy during achievement development</li>
+<li>During the program execution, during the function calls, tip of the stack constantly moves around with data being written or read near the tip. Stack Pointer would be pointing at that tip (stack pointer is CPU register, it will be covered later)</li>
+</ul>
+</li>
+</ul>
+<details class="spoiler spoiler_warning"><summary class="spoiler__header" id="avoid-using-addresses-close-to-the-tip-of-the-stack-during-achievement-development"><a href="#avoid-using-addresses-close-to-the-tip-of-the-stack-during-achievement-development"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M569.5 440C588 472 564.8 512 527.9 512H48.1c-36.9 0-60-40.1-41.6-72L246.4 24c18.5-32 64.7-32 83.2 0l239.9 416zM288 354c-25.4 0-46 20.6-46 46s20.6 46 46 46 46-20.6 46-46-20.6-46-46-46zm-43.7-165.3l7.4 136c.3 6.4 5.6 11.3 12 11.3h48.5c6.4 0 11.6-5 12-11.3l7.4-136c.4-6.9-5.1-12.7-12-12.7h-63.4c-6.9 0-12.4 5.8-12 12.7z"/></svg></div></a><strong>Warning:</strong> Avoid using addresses close to the tip of the stack during achievement development</summary><section><p><p>Function calls naturally result in local variables being put on stack, the <a href="https://en.wikipedia.org/wiki/Call_stack#Structure">stack frames</a> accumulate, and sometimes values not so far from the Stack Pointer appear during <em>RAM digging</em>. Such stack region should be avoided because of it&#39;s volatile nature.</p>
+<p>How do you know if you&#39;re close to the stack pointer? The only sure way is by using debugger and checking the Stack Pointer CPU register value, which will be covered later. Otherwise you can try opening the memory region, if values there are changing chaotically, if you don&#39;t know what most of them represent, if you didn&#39;t prove this memory region to be reliable - then it could be on stack.</p>
+</p></section></details><ul>
+<li>Now learn <em>malloc</em> if you&#39;re doing C, or <em>new operator</em> if you&#39;re doing C++, both of these return <em>pointers</em> that lead to the heap<ul>
+<li>Learn how to access or change whatever you allocated via pointer</li>
+<li>Try specifically allocating a struct that way, because that&#39;s what the pointers very often point at, and you encounter them during achievement development</li>
+<li>Try setting a breakpoint after that struct allocation, observe the struct pointer value - it contains an address, and your development environment likely allows to read that struct contents</li>
+<li>Try running your program and debugger several times - notice you likely get the pointer to point at different addresses, just like in whatever game you would develop achievements for</li>
+<li>During debugging, find how to open Memory Inspector-like thing in your editor (Memory View), try to locate the pointer value in there, try to follow the pointer to the struct, compare how data in the struct is presented to you in readable manner vs. how it&#39;s actually stored in the memory as seen in Memory View</li>
+<li>Define a pointer to struct in your struct, allocate it properly, try to change the data via that pointer. This represents &quot;pointer behind pointer&quot; / &quot;double layered pointer&quot; / &quot;nested pointer&quot; situation</li>
+<li>Optionally learn <em>free</em> for C and <em>delete operator</em> for C++, that&#39;s to deallocate what you&#39;ve allocated. Seasoned developers will mention smart pointers for C++ and <a href="https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization">RAII</a> - you don&#39;t have to care about that unless you&#39;re actually learning to be C++ programmer</li>
+</ul>
+</li>
+<li>Optional: learn linked lists, especially if you encountered them during achievement development. Code a linked list yourself, make sure you allocate it on the heap <a href="https://www.programiz.com/dsa/linked-list">[1]</a> <a href="https://youtu.be/0euvEdPwQnQ?t=1834">[2]</a> <a href="https://www.learn-c.org/en/Linked_lists">[3]</a></li>
+</ul>
+<h3 id="c-and-c-learning-resources"><strong>C and C++ learning resources</strong><a href="#c-and-c-learning-resources" class="anchor-link"><span>¶</span></a></h3><p>Below are various learning resources that I believe are worth getting started with, understand that they don&#39;t necessary teach in same order I suggested in the roadmap, and if you go with C++ it may teach things you won&#39;t find necessary:</p>
+<ul>
+<li><a href="https://www.learncpp.com/"><strong>learncpp.com</strong></a> - one of the major learning resources I personally had for C++ and it was my favorite. It teaches in way different order compared to roadmap above, and may include plenty of stuff specific to C++ that you won&#39;t find necessary. It includes material on <a href="https://www.learncpp.com/cpp-tutorial/installing-an-integrated-development-environment-ide/">how to setup IDE</a> and <a href="https://www.learncpp.com/cpp-tutorial/using-an-integrated-debugger-stepping/">using debugger</a></li>
+<li><a href="https://www.programiz.com/c-programming"><strong>programiz.com</strong></a> - teaches C</li>
+<li><a href="https://gribblelab.org/teaching/CBootCamp/"><strong>C Bootcamp by Paul Gribble</strong></a> - OK alternative/supplement learning material, Linux focused</li>
+<li><a href="https://www.learn-c.org/"><strong>learn-c.org</strong></a> - extremely short and concise, if it&#39;s someone&#39;s first tutorial - they may need more examples afterwards</li>
+<li><a href="https://www.youtube.com/playlist?list=PLhQjrBD2T381WAHyx1pq-sBfykqMBI7V4"><strong>CS50</strong></a> - Harvard lessons in video format that last for hours, some may prefer that way of learning. Half of it teaches C and more - so that&#39;s why I included it</li>
+</ul>
+<h3 id="small-code-and-debugger-exhibition"><strong>Small code and debugger exhibition</strong><a href="#small-code-and-debugger-exhibition" class="anchor-link"><span>¶</span></a></h3><p>I created a small struct that could represent an entity in a video game, called it an Aircraft and decided it would hold:</p>
+<ul>
+<li>8 byte string describing what it is (actually up to 7 bytes + 1 byte for null terminator, remember C strings)</li>
+<li>4 bytes for health, you may say it&#39;s excessive amount of bytes, but look how easy it was for me to just specify that <code>int</code>, that&#39;s how you may have encountered 0/1 values stored in 4 bytes too, people sometimes use <code>int</code> for storing boolean values</li>
+<li>2 bytes for ammo count</li>
+<li>2 bytes for some other ammo count</li>
+<li>12 byte array with 4 bytes per element storing position on the map, I used int instead of float for simplicity</li>
+<li>12 byte array with 4 bytes per element storing velocity vector that would move the position</li>
+<li>4 byte pointer to another aircraft</li>
+</ul>
+<p>Based on those sizes, offsets were put in the trailing comment for each struct member, you may notice it&#39;s similar to what you might have seen in Code Notes.</p>
+<p>I recommend you open the screenshot below in separate window so you can follow along.</p>
+<p><div class="image"><div class="image__container"><a href="./vstudio-cpp.png" target="_blank" rel="noopener"><img title="" src="./vstudio-cpp.png" /></a></div></div></p>
+<p>I have put a breakpoint on line 16 and then ran the debugger, now I can go over small details:</p>
+<ul>
+<li>Look at the line 23 that allocated a struct on the heap, if I look at the Locals window on top right, or hold the mouse over <code>aircraft</code> pointer, it shows me that it got allocated on heap at <code>0x00D90DA0</code><ul>
+<li>But commentary above also says that pointer itself is located on stack, I can easily check it&#39;s location on stack by adding <code>&amp;aircraft</code> into the Watch window on middle right, which reveals address <code>0x008FF77C</code></li>
+<li>Notice that this address is near tip of the stack, which is indicated by ESP register (CPU registers will be covered later, just note that it&#39;s indeed on stack)</li>
+<li>Notice that I can visit this address in one of the memory windows (Memory 1 on bottom left, similar to Memory Inspector), and the stored 4 bytes at that address represent <code>0x00D90DA0</code>, it&#39;s stored backwards, in little-endian, which is something you also might have noticed during <em>RAM digging</em>. In Visual Studio, those memory windows can be accessed in menu: Debug -&gt; Windows -&gt; Memory</li>
+<li>This example runs on Windows and I guess that&#39;s the reason why stack segment happens to be on lower address range compared to heap, which does not match <a href="https://static.javatpoint.com/cpages/images/memory-layout-in-c.png">the diagram</a> you&#39;ve seen before</li>
+</ul>
+</li>
+<li>Now I can follow <code>0x00D90DA0</code> in a different memory window (Memory 2) and start comparing what I see there with struct definition and what&#39;s shown in the Locals window<ul>
+<li>Notice that values do match the default values of struct and also what I specified on lines 24-28, with the exception of pos[0] which was already modified by line 15</li>
+<li>Take note of pointer at <code>0x00D90DA0 + 0x28</code>, it was attached on line 34. This is pointer to the pointer situation. I can also follow that address: <code>0x00D90C98</code> in yet another memory window (Memory 3), and data found there also matches what Locals window show</li>
+</ul>
+</li>
+<li><span id="negative-offset-remark">Notice that all offsets for the struct are positive, and regular programmers deal with such structs all the time, all with positive offsets. This is to explain why one shouldn&#39;t rely on negative offsets in the achievement code - it&#39;s merely something lucky that can work instead of being perfect solution that matches the original program</span></li>
+<li>If I press Step Over button, line 16 will get executed and debugger stops at line 17, the changes to pos[1] value will be seen in Locals and Memory 2 windows</li>
+<li>If I were to press Step Out button on the toolbar at the top, remainder of moveAircraft function will be executed and debugger will stop at line 36 after executing the function, the changes to aircraft-&gt;pos will be seen in Locals and Memory 2 windows</li>
+<li>To practice usage of Step In button on the toolbar at the top, I could put a breakpoint on Line 36, and check what happens when using Step In button compared to Step Over</li>
+</ul>
+<p>Here&#39;s the original code that you can copy paste if you wish:</p>
+<pre class="language-cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
+
+<span class="token keyword">struct</span> <span class="token class-name">Aircraft</span> <span class="token punctuation">{</span>
+  <span class="token keyword">char</span> id<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"DEFAULT"</span><span class="token punctuation">;</span>         <span class="token comment">// 0x0</span>
+  <span class="token keyword">int</span> health <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">;</span>               <span class="token comment">// 0x8</span>
+  <span class="token keyword">short</span> ammo1 <span class="token operator">=</span> <span class="token number">0x2500</span><span class="token punctuation">;</span>           <span class="token comment">// 0xC</span>
+  <span class="token keyword">short</span> ammo2 <span class="token operator">=</span> <span class="token number">0x1000</span><span class="token punctuation">;</span>           <span class="token comment">// 0xE</span>
+  <span class="token keyword">int</span> pos<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>       <span class="token comment">// 0x10</span>
+  <span class="token keyword">int</span> velocity<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>  <span class="token comment">// 0x1C</span>
+
+  Aircraft <span class="token operator">*</span>target <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>     <span class="token comment">// 0x28</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">void</span> <span class="token function">moveAircraft</span><span class="token punctuation">(</span> Aircraft <span class="token operator">*</span>aircraft <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  aircraft<span class="token operator">-></span>pos<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">+=</span> aircraft<span class="token operator">-></span>velocity<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  aircraft<span class="token operator">-></span>pos<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">+=</span> aircraft<span class="token operator">-></span>velocity<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  aircraft<span class="token operator">-></span>pos<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">+=</span> aircraft<span class="token operator">-></span>velocity<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  Aircraft <span class="token operator">*</span>aircraft <span class="token operator">=</span> <span class="token keyword">new</span> Aircraft<span class="token punctuation">;</span>
+  aircraft<span class="token operator">-></span>pos<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x80</span><span class="token punctuation">;</span>
+  aircraft<span class="token operator">-></span>pos<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x50</span><span class="token punctuation">;</span>
+  aircraft<span class="token operator">-></span>pos<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0xCAFE</span><span class="token punctuation">;</span>
+  aircraft<span class="token operator">-></span>velocity<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">0x10</span><span class="token punctuation">;</span>
+  aircraft<span class="token operator">-></span>velocity<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">0x20</span><span class="token punctuation">;</span>
+
+  Aircraft <span class="token operator">*</span>target <span class="token operator">=</span> <span class="token keyword">new</span> Aircraft<span class="token punctuation">;</span>
+  <span class="token function">strcpy_s</span><span class="token punctuation">(</span> target<span class="token operator">-></span>id<span class="token punctuation">,</span> <span class="token string">"SHREK"</span> <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// set the id to SHREK</span>
+
+  aircraft<span class="token operator">-></span>target <span class="token operator">=</span> target<span class="token punctuation">;</span>
+
+  <span class="token function">moveAircraft</span><span class="token punctuation">(</span> aircraft <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre><h3 id="understand-the-role-of-cpu"><strong>Understand the role of CPU</strong><a href="#understand-the-role-of-cpu" class="anchor-link"><span>¶</span></a></h3><p>Once you get comfortable with coding - you should be more comfortable understanding what goes on lower level, specifically CPU - central processing unit. <strong>I will focus only on necessary parts for debugging:</strong> architectures, disassembly and registers. Other learning resources additionally focus on ALU (Arithmetic Logic Unit), communications via buses, cache, things like pipelining and more - those are all implementation details that are important for CPU itself to function efficiently instead of helping you to understand problems you will be dealing with.</p>
+<p>C / C++ is compiled language: if you open the file of your compiled program in Hex Editor, there will be tons of binary guts. Some of these guts are only to provide information about program being executed - those are for Operating System (interested? try <a href="https://github.com/horsicq/Detect-It-Easy">Detect It Easy</a>), and the other portion of guts is the actual program you wrote and compiled, in form of machine code. This machine code can be read and perfectly executed by CPU <em>it was compiled for</em>.</p>
+<p>Machine code you can see in Hex Editor is not human readable, but can be made readable by applying disassembler, which will present machine code in <a href="https://en.wikipedia.org/wiki/Assembly_language">assembly language</a> <em>for certain CPU architecture</em>. You need to learn to be comfortable reading and navigating disassembly, which you will deal with while using the debugger. If it makes you feel any better - there was period of time when people primarily coded in assembly instead of C.</p>
+<p>I already mentioned that machine code will be executed by CPU <em>it was compiled for</em>. Different CPUs can have different architectures, the PC or laptop you&#39;re using is likely to be <a href="https://en.wikipedia.org/wiki/X86-64">x86_64</a>, modern smartphones and some laptops: <a href="https://en.wikipedia.org/wiki/ARM_architecture_family">ARM</a>. Different architectures will also make you deal with different instruction sets for assembly, and different sets of registers.</p>
+<p>The consoles you&#39;re developing achievements for may have rather distinct architectures. This blogpost has examples for Playstation consoles: PSX, PS2 and PSP, which at their core are <a href="https://en.wikipedia.org/wiki/MIPS_architecture">MIPS</a>.</p>
+<p>Even if disassembly output is more human-readable, it certainly isn&#39;t compared to C, atleast until you get used to actually reading it. What could be one line of C++ code may explode into several very trivial lines of assembly language. Countless amount of lines that do very trivial things, such as:</p>
+<ul>
+<li>Read the RAM at specified address, store result in specified CPU register</li>
+<li>Read values in CPU registers, do something like math, write the result into CPU register</li>
+<li>Do some comparisons and begin executing certain code based on the result of comparison (jumps, branching)</li>
+<li>Read the value from specified CPU register and write it to RAM at specified address</li>
+</ul>
+<p>Now about CPU registers: you&#39;re already familiar with vast amount of RAM that program can read from and write to. CPU registers are also memory, designed specifically for CPU operations, registers are also extremely fast to access and some of them have specific purpose. Set of registers and their names are different given different CPU architectures.</p>
+<p>Common registers to expect:</p>
+<ul>
+<li>General purpose registers to hold whatever values. In practice there are conventions that result in specific values be put in specific general purpose registers, like function arguments</li>
+<li>Program Counter (Instruction Pointer) which holds the memory address of next code instruction to be fetched and executed. In practice it shows you which code is currently being executed</li>
+<li>Stack Pointer which holds the memory address of the tip of the stack</li>
+</ul>
+<h3 id="mips"><strong>MIPS</strong><a href="#mips" class="anchor-link"><span>¶</span></a></h3><p>Here are references and notes regarding MIPS, feel free to revisit the section as you practice:</p>
+<ul>
+<li><a href="https://inst.eecs.berkeley.edu/~cs61c/resources/MIPS_Green_Sheet.pdf"><strong>Cheat Sheet</strong></a> (<a href="https://inst.eecs.berkeley.edu/~cs61c/resources/MIPS_Green_Sheet.pdf">mirror1</a>, <a href="https://courses.cs.washington.edu/courses/cse378/09au/MIPS_Green_Sheet.pdf">mirror2</a>) - to remind yourself of what instructions do, to remind yourself of register purposes</li>
+<li><a href="https://en.wikibooks.org/wiki/MIPS_Assembly"><strong>Wikibooks: MIPS Assembly</strong></a> - decent and concise additional material on MIPS</li>
+<li><a href="https://courses.cs.washington.edu/courses/cse410/09sp/examples/MIPSCallingConventionsSummary.pdf"><strong>Calling Conventions Summary</strong></a> - gives additional understanding on how register values change between function calls, it&#39;s important to understand</li>
+<li><a href="https://www.dsi.unive.it/~gasparetto/materials/MIPS_Instruction_Set.pdf"><strong>Instruction Set Cheat Sheet</strong></a> - explains instructions more in-depth</li>
+<li><a href="https://student.cs.uwaterloo.ca/~cs350/common/r3000-manual.pdf"><strong>IDT R30xx Family Software Reference Manual</strong></a> - very in-depth manual, no need to read all of it. Can focus on register explanations (Chapter 2); deeper explanations of instructions (Chapter 9); and Chapter 10 - C Programming, has an example of how functions are called</li>
+</ul>
+<h4 id="register-purpose-paraphrased"><strong>Register Purpose Paraphrased</strong><a href="#register-purpose-paraphrased" class="anchor-link"><span>¶</span></a></h4><ul>
+<li><strong><code>$v0 - $v1</code></strong> return value for the function <a href="https://stackoverflow.com/questions/19204430/when-do-we-need-v1-in-mips">[1]</a></li>
+<li><strong><code>$a0 - $a3</code></strong> function arguments</li>
+<li><strong><code>$s0 - $s7</code></strong> general purpose, expect them to stay same before and after calling the function<ul>
+<li>Preservation is done by called function itself by copying the register values on stack, look into <em>A Leaf Function With Data and Saved Registers</em> section of <a href="https://courses.cs.washington.edu/courses/cse410/09sp/examples/MIPSCallingConventionsSummary.pdf"><em>Calling Conventions Summary</em></a> above for example</li>
+</ul>
+</li>
+<li><strong><code>$t0 - $t9</code></strong> general purpose, do not expect any functions to preserve these</li>
+<li><strong><code>$at</code></strong> assembler temporary that&#39;s involved in <a href="https://en.wikibooks.org/wiki/MIPS_Assembly/Pseudoinstructions">pseudoinstructions</a>, one can look at it as general purpose register with a specific purpose</li>
+<li><strong><code>$gp</code></strong> globals pointer, any instructions referring to it result in stable addresses to global variables that you&#39;d prefer to use in achievement code</li>
+<li><strong><code>$sp</code></strong> stack pointer</li>
+<li><strong><code>$ra</code></strong> return address, but you usually would look at debugger&#39;s callstack instead</li>
+</ul>
+<h4 id="branch-delays"><strong>Branch Delays</strong><a href="#branch-delays" class="anchor-link"><span>¶</span></a></h4><p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-12.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-12.png" /></a></div></div></p>
+<p>This is a quirk to be aware of: in screenshot above, both instructions <code>002FFE2C jr ra</code> and <code>002FFE30 sw a0, -0x573C(v0)</code> will be executed if you were to press Step Into/Over.</p>
+<p>You could call this a side effect of classic <em>fetch-decode-execute-memoryAccess-writeback</em> <a href="https://en.wikipedia.org/wiki/Classic_RISC_pipeline">pipeline cycle</a>. By the time following the branch (<code>jr ra</code>) actually takes place - CPU still has some cycles to <em>fetch-decode-execute</em> more instructions below. So compiler put an additional instruction below the <code>jr</code> to keep the pipeline efficiency good enough.</p>
+<p>Additional explanations: <a href="https://en.wikipedia.org/wiki/Delay_slot">[1]</a> <a href="https://stackoverflow.com/questions/15375084/what-is-the-point-of-delay-slots">[2]</a> <a href="https://stackoverflow.com/questions/59130450/why-did-the-compiler-put-an-instruction-after-the-mips-j-instruction-that-retu">[3]</a></p>
+<h2 id="pointer-psx-game-pcsx-redux"><strong>Pointer, PSX game, PCSX-Redux</strong><a href="#pointer-psx-game-pcsx-redux" class="anchor-link"><span>¶</span></a></h2><p>The most trivial situation is when there&#39;s some static/global pointer variable and you just have to follow it. You don&#39;t even need debugger and especially decompiler to track these down. I&#39;m writing this section because it&#39;s still a good practice for a newbie before going into tougher cases - an introductory into emulator debugger and Ghidra decompiler usage. You can also validate that your offsets and guesses were correct.</p>
+<p>I will be revisiting <a href="https://retroachievements.org/game/11308">Ace Combat 3 Electrosphere NTSC-J release</a>, to revalidate some noted pointer that was used for achievements, specifically the amount of missiles, here&#39;s the code note:</p>
+<pre class="language-"><code class="language-">0xbd098
+
+Pointer [32-bit]
++ 0x00 - Pointer to player's aircraft capabilities. Corrupting this pointer or it's contents can be fun [32-bit]
+---+ 0x78 - Amount of Missiles/Bombs aircraft can carry [32-bit]
++ 0x18 - Index of entity missile will track when shot
++ 0x1C - Player's missile count [32-bit]</code></pre><h3 id="debugger-usage"><strong>Debugger usage</strong><a href="#debugger-usage" class="anchor-link"><span>¶</span></a></h3><ol>
+<li><p>Install <a href="https://github.com/grumpycoders/pcsx-redux">PCSX-Redux</a> emulator, <a href="https://install.appcenter.ms/orgs/grumpycoders/apps/pcsx-redux-win64/distribution_groups/public">Windows x64 builds are here</a></p>
+<ul>
+<li>This emulator can be confusing compared to what most other people use for regular play, so instructions also inclde loading and running the game</li>
+<li>Other choices of PSX emulators with debugger support are <a href="https://problemkaputt.de/psx.htm">no$psx</a> which I found less intuitive. <a href="https://www.emulator-zone.com/doc.php/psx/psx_em.html">pSX 1.13</a> also known as psxfin has debugger with terrible UI, <a href="https://www.zophar.net/forums/index.php?threads/tutorial-using-a-debugger-to-figure-out-game-mechanics.13521/">here&#39;s forum thread with it&#39;s usage</a>. There&#39;s <a href="https://www.romhacking.net/utilities/267/">PCSX with Debugger</a>. <a href="https://www.duckstation.org/">Duckstation</a> has debugger in it, but at the moment of writing it&#39;s barebones and not recommended, hope it will become good eventually so you could run it together with RAIntegration</li>
+<li>For some reason I had latest versions with GLFW integration <a href="./pcsx-debugger/pcsx-redux-error.png">crash with this message</a>, I understand the error but not why it happens. <strong>Running with administrator rights</strong> made it work, some time later running it without admin rights also didn&#39;t cause crash, I don&#39;t know why. It also still crashes when opening emulator settings without admin rights</li>
+</ul>
+</li>
+<li><p>Launch the emulator, open menu: Configuration -&gt; Emulation</p>
+<ul>
+<li>Disable Dynarec CPU: it specifically says that faster Dynarec CPU does not play well with debugger</li>
+<li>Enable Debugger</li>
+<li>Enable Web Server: this is to be able to dump PSX RAM later for analysis. I really didn&#39;t find any other way, otherwise you would need to use Cheat Engine on anything similar that can read and dump any process memory</li>
+<li>Select actual PSX BIOS file: by default this emulator comes with openbios.bin and I don&#39;t know if it&#39;s reliable to stick with it</li>
+<li>Enable Fast boot: I had issues with games loading without it</li>
+</ul>
+</li>
+<li><p>Restart the emulator or select File -&gt; Reboot</p>
+<ul>
+<li>BIOS and other settings won&#39;t be applied without it</li>
+</ul>
+</li>
+<li><p>Open menu: File -&gt; Open Disk Image and navigate to the image file of the game, drag and dropping the file onto emulator window works too</p>
+</li>
+<li><p>Open menu: Emulation -&gt; Start emulation (F5) to start the game</p>
+</li>
+<li><p>Prepare minimal debugging environment</p>
+<ul>
+<li>All the windows can be opened via Debug -&gt; CPU menu</li>
+<li>At bare minimum you&#39;ll need Assembly, Registers, Breakpoints, Memory Editor and Memory Observer that track value changes in memory the same way RAIntegration can</li>
+<li><a href="./pcsx-debugger/pcsx-redux-debug-setup.png">Here&#39;s how I did it</a>, windows can be moved and merged together</li>
+</ul>
+</li>
+</ol>
+<p>Now I can start working, I already launched the in-game mission. Suppose I&#39;m already aware that missile counter (32-bit value of 72 or 0x48) is behind a pointer, my goal is to figure out where that pointer originates from by using debugger.</p>
+<ol>
+<li><p>Begin targeting for a breakpoint: track down missile count value address in memory, same way as you would in RAIntegration or Cheat Engine:</p>
+<ul>
+<li>I can do that by using Memory Observer -&gt; Delta-over-time search, first scan for ExactValue of 72 of type Int (32-bit); firing a missile; then doing Next scan for ExactValue of 71. I get two candidates, one of them is very high address that&#39;s also close close to stack pointer - you wouldn&#39;t use it, this leaves only one candidate at address <code>0x801717d8</code></li>
+</ul>
+<p><div class="image"><div class="image__container"><a href="./pcsx-debugger/pcsx-memory-observer.png" target="_blank" rel="noopener"><img title="" src="./pcsx-debugger/pcsx-memory-observer.png" /></a></div></div></p>
+<ul>
+<li>Memory Observer has convenient button to follow that address in Memory Editor #1, I press it, so I can edit that value and make sure it&#39;s indeed the one that affects my missile count. For example: I set the value to zero and it&#39;s indeed reflected in the game</li>
+<li><strong>The confirmed target I will be dealing with is located at <code>0x801717d8</code></strong></li>
+</ul>
+<p><div class="image"><div class="image__container"><a href="./pcsx-debugger/pcsx-memory-editor.png" target="_blank" rel="noopener"><img title="I set the value to zero and it&apos;s indeed reflected in the game" src="./pcsx-debugger/pcsx-memory-editor.png" /></a><h4 class="image__title">I set the value to zero and it&apos;s indeed reflected in the game</h4></div></div></p>
+</li>
+<li><p>Set a breakpoint that will break when desired value changes, so it will show which code changes that value:</p>
+<ul>
+<li>That means I want to set a break-on-write breakpoint at <code>0x801717d8</code>. Very likely you did not practice such breakpoints when debugging regular C or C++ programs, because when you have your own source code - putting breakpoints at specific code of your own is usually enough. This situation is different: you don&#39;t have the original source code and therefore don&#39;t even know which code affects the values you&#39;re interested in, naturally making you set such a breakpoint on value change</li>
+<li><strong>I set a Write breakpoint at <code>0x801717d8</code> with the Width of 4</strong>, do prefer to make breakpoint width match the value you&#39;re tracking. I know my value takes 32-bit, therefore Width is 4 (bytes)</li>
+</ul>
+</li>
+</ol>
+<details class="spoiler spoiler_question"><summary class="spoiler__header" id="what-about-break-on-read-breakpoints"><a href="#what-about-break-on-read-breakpoints"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> What about break-on-read breakpoints?</summary><section><p><p>They do exactly what they say. Sometimes you don&#39;t have easy way to get into situation that changes the value, but value might be displayed instead, meaning some code will read that value before rendering it. This is when it&#39;s worth trying to break-on-read.</p>
+<p>It&#39;s also worth a try when you just want to investigate different code accessing the value, there might be a chance it&#39;s easier to analyze. Break-on-read breakpoints will also be often used to check how pointers are read and accessed.</p>
+</p></section></details><p><div class="image"><div class="image__container"><a href="./pcsx-debugger/pcsx-breakpoint-added.png" target="_blank" rel="noopener"><img title="" src="./pcsx-debugger/pcsx-breakpoint-added.png" /></a></div></div></p>
+<ol start="3">
+<li>Naturally trigger a change of your value in-game: I just shoot the missile one more time. The emulation pauses, I can analyze the code now<ul>
+<li>I may need to click on Jump to PC button if I forgot to tick Follow PC checkbox, reminder that PC stands for Program Counter - the memory address of instruction that CPU will execute</li>
+</ul>
+</li>
+</ol>
+<p>An arrow points at the instruction: <code>800719a8: sw $v0, 0x001c($a1)</code>, which means: store word (4 bytes for 32-bit MIPS!) from <code>v0</code> register into an address specified by <code>a1</code> register + offset by <code>0x1c</code></p>
+<p>The <code>v0</code> register on top right shows value of <code>0x46</code> (70) - lesser amount of missiles indeed; <code>a1</code> register shows the address of <code>0x801717bc</code></p>
+<ul>
+<li><code>0x801717bc + 0x1c = 0x801717d8</code> which matches the same address I previously set the break-on-write breakpoint for</li>
+</ul>
+<p><div class="image"><div class="image__container"><a href="./pcsx-debugger/pcsx-assembly1.png" target="_blank" rel="noopener"><img title="" src="./pcsx-debugger/pcsx-assembly1.png" /></a></div></div></p>
+<p>So everything is correct and makes sense here. I&#39;m already highly confident that <code>a1</code> register contains the pointer, and <code>0x1c</code> is an offset to that pointer, there&#39;s only one question left: <strong>where did value in <code>a1</code> come from?</strong></p>
+<p>To figure that out, I have to read the code that precedes the one I broke into, I have to ask a question: <em>where is the most recent instruction that affected <code>a1</code>?</em> In this case the instruction is close, at <code>80071990: lw $a1, 0x0524($gp)</code>, which means: load word (4 bytes) from address specified at <code>gp</code> register + offset by <code>0x0524</code> into register <code>a1</code></p>
+<p>The <code>gp</code> register, which didn&#39;t fit into screenshot, shows value of <code>0x800bcb74</code>. To get an offset against <code>gp</code> register of all things means that my search ends here. <code>0x800bcb74 + 0x0524 = 0x800bd098</code>, if I follow that address in Memory Editor, I notice it indeed contains the same value I saw before on <code>a1</code> register: <code>0x801717bc</code>.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx-debugger/pcsx-memory-editor2.png" target="_blank" rel="noopener"><img title="" src="./pcsx-debugger/pcsx-memory-editor2.png" /></a></div></div></p>
+<p>I have to stress: there&#39;s no point looking beyond after I noticed I got the address via <code>gp</code> register. This register is expected to point at data segment which contains global variables, if it&#39;s global - it&#39;s also static, therefore can be used in achievement development:</p>
+<pre class="language-"><code class="language-">AddAddress 24-bit 0xbd098
+Mem        16-bit 0x1c     .. conditions ..</code></pre><h3 id="decompiler-usage"><strong>Decompiler usage</strong><a href="#decompiler-usage" class="anchor-link"><span>¶</span></a></h3><ol>
+<li>During the in-game moment you wish to analyze while PCSX-Redux emulator is running, with Web Server on port 8080 enabled, dump the 2MB of PSX RAM by visiting: <a href="http://localhost:8080/api/v1/cpu/ram/raw">http://localhost:8080/api/v1/cpu/ram/raw</a></li>
+</ol>
+<details class="spoiler spoiler_question"><summary class="spoiler__header" id="why-analyze-ram-dump-instead-of-original-executable"><a href="#why-analyze-ram-dump-instead-of-original-executable"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> Why analyze RAM dump instead of original executable?</summary><section><p><p>Complex PSX games sometimes rely on concept of <em>overlays</em> - code that&#39;s loaded/swapped at runtime to work around limited 2MB of RAM. If you analyze original executable only - you risk missing the code that was loaded during the exact moment you care about.</p>
+<p>And yet I got an impression that <strong>ghidra_psx_ldr</strong> extension that&#39;s mentioned below works better with original executables. It&#39;s still possible to map overlays for analysis - but that&#39;s additional potentially unnecessary work for research-and-forget situations like tracking pointers for achievement development. You&#39;d prefer to stick to original executable if you want to analyze entire game thoroughly.</p>
+</p></section></details><ol start="2">
+<li><a href="#installing-ghidra">Install Ghidra</a></li>
+<li>Install <a href="https://github.com/lab313ru/ghidra_psx_ldr/releases">ghidra_psx_ldr</a> extension, see <a href="#installing-ghidra-extensions">Installing Ghidra Extensions</a> if needed</li>
+<li>Run Ghidra, create new Project: File -&gt; New Project, Non-Shared project, specify project name and dedicated directory for the project, then Finish. The project you&#39;ve created is now active</li>
+<li>Import the PSX memory dump you got previously: File -&gt; Import File, or just drag and drop the file on Project window<ul>
+<li>Format: Raw Binary</li>
+<li>Language: PSX - this one is available if you installed ghidra_psx_ldr extension</li>
+<li><strong>Important!</strong> Click <strong>Options...</strong> and change the Base Address from <code>00000000</code> to <code>80000000</code> so it matches the addresses you saw in PCSX debugger. If you don&#39;t do this - it may worsen the analysis later</li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-import-file-psx.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-import-file-psx.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-import-file-base-psx.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-import-file-base-psx.png" /></a></div></div></p>
+<ol start="6">
+<li>Import summary will be shown, close it. With imported file selected, double click it, or click on the Dragon icon to open CodeBrowser:</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-active-project-psx.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-active-project-psx.png" /></a></div></div></p>
+<ol start="7">
+<li>You will be prompted to analyze the file: click Yes. If you missed this dialog, you can revisit menu in the CodeBrowser: Analysis -&gt; Auto Analyze</li>
+<li>Default analyzer options should be good enough, I heard the recommendation to additionally enable <strong>Aggressive Instruction Finder (Prototype)</strong> despite the warnings it gives. Click Analyze, you should notice the process going at bottom right of the CodeBrowser. After it&#39;s done, I got several warnings I can ignore:<ul>
+<li>I actually tried to analyze without the Aggressive option - in that case it didn&#39;t outline the function I wanted. So this confirms the option is worth checking</li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-analyze.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-analyze.png" /></a></div></div></p>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-analysis-warnings-psx.png" target="_blank" rel="noopener"><img title="These warnings can be ignored" src="./pcsx-decompiler/ghidra-analysis-warnings-psx.png" /></a><h4 class="image__title">These warnings can be ignored</h4></div></div></p>
+<p>If you remember the Debugger example: the code that was writing to missile count was located at <code>0x800719a8</code>, I want to look into the decompilation of code at that address, let&#39;s get to it:</p>
+<ol>
+<li>In CodeBrowser, open menu: Navigation -&gt; Go To... (G), then enter address to visit: <code>0x800719a8</code></li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-go-to-psx.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-go-to-psx.png" /></a></div></div></p>
+<ol start="2">
+<li>Same disassembly you&#39;ve seen in emulator will be shown on the left, decompiled code will be shown on the right:<ul>
+<li>I can start just by clicking the <code>800719a8</code> instruction in disassembly, which highlights line 12 in the decompiler</li>
+<li>In turn, selecting text of the whole line 12 in decompiler highlights relevant instructions in disassembly</li>
+<li>The line 8 in decompiler has scary looking but valid C code of <code>*(int *)(iGp00000524 + 0x1c)</code>. It can be read as: given specific value <code>iGp00000524 + 0x1c</code>, interpret it as pointer and dereference it, dereferencing on the left of <code>=</code> implies writing to calculated address, dereferencing on the right of <code>=</code> implies reading from calculated address</li>
+<li><code>iGp00000524</code> is how Ghidra paraphrased the <code>0x0524($gp)</code> previously seen in the debugger, the disassembly also shows it as <code>DAT_00000524(gp)</code></li>
+<li>So given this line of decompiled code, you&#39;d still have to revisit the debugger in emulator anyway and check the value of <code>gp</code> register to figure out the original pointer address and get the same job done</li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-decompiler-psx-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-decompiler-psx-1.png" /></a></div></div></p>
+<details class="spoiler spoiler_warning"><summary class="spoiler__header" id="decompiled-function-is-grayed-out-lets-fix-it"><a href="#decompiled-function-is-grayed-out-lets-fix-it"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M569.5 440C588 472 564.8 512 527.9 512H48.1c-36.9 0-60-40.1-41.6-72L246.4 24c18.5-32 64.7-32 83.2 0l239.9 416zM288 354c-25.4 0-46 20.6-46 46s20.6 46 46 46 46-20.6 46-46-20.6-46-46-46zm-43.7-165.3l7.4 136c.3 6.4 5.6 11.3 12 11.3h48.5c6.4 0 11.6-5 12-11.3l7.4-136c.4-6.9-5.1-12.7-12-12.7h-63.4c-6.9 0-12.4 5.8-12 12.7z"/></svg></div></a><strong>Warning:</strong> Decompiled function is grayed out, let&apos;s fix it</summary><section><p><p>Unfortunately Ghidra failed to perfectly analyze this function, though what it did analyze was enough to track down the pointer.</p>
+<p>When function is grayed out like that - it means it&#39;s not fully defined, maybe it doesn&#39;t even include the entire code from disassembly. To fix that - one has to revisit the PCSX debugger and figure out where the function begins.</p>
+<p>Official Ghidra docs also explain this, in any Ghidra window open menu: Help -&gt; Contents, and look into Ghidra Functionality -&gt; Decompiler -&gt; Decompiler Window -&gt; Undefined Functions, here&#39;s the most important quote:</p>
+<blockquote>
+<p><em>The current address, as indicated by the cursor in the Listing for instance, is generally not the entry point of the invented function, but the current address will be contained somewhere in the body.</em></p>
+</blockquote>
+<p>After setting the break-on-execute breakpoint in PCSX debugger on address <code>0x800719a8</code> (which can also be done by double clicking to the left of the instruction), which was the instruction that deducted missile count, my goal is: <em>I&#39;m currently inside the function, I need to figure out which function called the function I&#39;m currently in</em>.</p>
+<p>Normally, just pressing Step Out button would be enough to figure that out - unfortunately the bottom of the callstack on the picture shows that Step Out will make me land on <code>0x8007197c</code> which clearly belongs to the same function I&#39;m currently in. The callstack window marks it as heuristic and it originated after the <code>jal</code> call at <code>0x80071974</code>, for some reason it stayed like that afterwards and I guess you can consider it as misleading heuristic.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/pcsx-problematic-callstack.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/pcsx-problematic-callstack.png" /></a></div></div></p>
+<p>Recognizing that, I click on address <code>0x80072104</code> instead, which is right above <code>0x8007197c</code> in the callstack, which brings me to code below:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/pcsx-code-above.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/pcsx-code-above.png" /></a></div></div></p>
+<p>This is rather unfortunate situation, the <code>jalr</code> instruction, which you can treat as function call, does not lead to hardcoded address, but follows what&#39;s stored in <code>v0</code> register: <code>0x80071950</code>. Such indirect function call is what I presume what made Ghidra fail to analyze the function properly, it also implies that I might be dealing with function pointers. Later on, in case of PS2 and PSP - one may even suspect virtual function calls (results of object oriented programming in C++).</p>
+<blockquote>
+<p><em>In fact, I later figured out it&#39;s indeed function pointers and they lead to code for firing different weapons, like bombs or different kinds of missiles.</em></p>
+</blockquote>
+<p>I already set the breakpoint on the screenshot, if I fire the missile again - fortunately that&#39;s the only time the breakpoint activates, meaning the following code is still relevant. In the worst case that you could encounter - this breakpoint would activate at different times and <code>jalr</code> would lead to different functions, meaning you&#39;d need to pay attention that you land on code that was relevant to original breakpoint at <code>0x800719a8</code>.</p>
+<p>Pressing Step In while arrow is pointing at <code>jalr</code> will actually move the arrow one instruction down instead of going straight to the specified address. Read on <a href="#branch-delays">Branch Delays</a> if you&#39;re confused about this. Pressing Step In again will follow to <code>0x80071950</code></p>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/pcsx-code-start.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/pcsx-code-start.png" /></a></div></div></p>
+<p>This looks fine, the disabled original breakpoint isn&#39;t too far down below. I can go back to Ghidra now. Turns out it recognized the start of function correctly because the address in the function name <code>UndefinedFunction_80071950</code> matches the one seen in debugger. What has to be done now is to instruct Ghidra decompiler that this is actually a function, which is done by Right Clicking -&gt; Create function (F).</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-create-function-code-start.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-create-function-code-start.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-decompiler-psx-2.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-decompiler-psx-2.png" /></a></div></div></p>
+<p>The function got a defined name of <code>FUN_80071950</code> and is not grayed out anymore, meaning it can be edited, even though there&#39;s no need for that in this case.</p>
+</p></section></details><details class="spoiler spoiler_question"><summary class="spoiler__header" id="is-it-possible-to-let-ghidra-know-gp-register-value"><a href="#is-it-possible-to-let-ghidra-know-gp-register-value"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> Is it possible to let Ghidra know gp register value?</summary><section><p><p>This is possible to do and will make <code>iGp</code> labels more readable. <strong>This requires that function is properly defined and not greyed out</strong> - an issue that&#39;s explained in the Warning section above.</p>
+<p>For this example, all that&#39;s needed is to Right Click at the start of the function in disassembly: <code>80071950</code> -&gt; Set Register Values (CTRL+R). <code>gp</code> register value is then set to be exact same as it was seen in debugger: <code>800bcb74</code>.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-set-register-values-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-set-register-values-1.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-set-register-values-2.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-set-register-values-2.png" /></a></div></div></p>
+<p>Decompiled code has changed, focus on yellow painted parts of the screenshot. The pointer got stored in <code>puVar2</code> as readable <code>PTR_PTR_DAT_800db098</code> - the address of that match what was seen in the debugger. The usage of <code>puVar2</code> later on has exact same offsets as before. Note that disassembly on the left says <code>assuming gp = 0x800bcb74</code>. I&#39;m not sure why the <code>assume gp = &lt;UNKNOWN&gt;</code> happened below though, despite it not affecting the decompiler output.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx-decompiler/ghidra-set-register-values-3.png" target="_blank" rel="noopener"><img title="" src="./pcsx-decompiler/ghidra-set-register-values-3.png" /></a></div></div></p>
+<p>You should have noted that you can set other register values too, feel free to do so if that makes sense and those values would lead to global variables. Anything to make decompilation more readable can help to finish the job faster.</p>
+</p></section></details><h2 id="pointer-x2-ps2-game-pcsx2"><strong>Pointer x2, PS2 game, PCSX2</strong><a href="#pointer-x2-ps2-game-pcsx2" class="anchor-link"><span>¶</span></a></h2><p>Pointers to pointers is when it becomes less trivial to deal with. This is when your understanding of foundations is tested, because you have to be conscious about what you see and where to look next.</p>
+<p>I&#39;m dealing with PS2 now, it&#39;s still MIPS, but now with 64-bit and floating-point support. The instruction set is broader, but overall disassembly experience shouldn&#39;t be worse than PSX. Because of 64-bit support, register values can hold large amount of data, but in practice you will look at bottom quarter part of the register.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-registers.png" target="_blank" rel="noopener"><img title="Bunch of huge register values in PCSX2 debubger, you will focus on rightmost part of these, ignore leftover value garbage on the left" src="./pcsx2-registers.png" /></a><h4 class="image__title">Bunch of huge register values in PCSX2 debubger, you will focus on rightmost part of these, ignore leftover value garbage on the left</h4></div></div></p>
+<p>Let&#39;s look into <a href="https://retroachievements.org/game/19283">Gran Turismo 4: Prologue</a>, one of the code notes allows to track player&#39;s current position during the race (it&#39;s part of HUD). That value ended up useful for checking if player won the race. This value is only one pointer deeper compared to PSX example:</p>
+<pre class="language-"><code class="language-">0x9c1a9c
+
+Pointer [32-bit]
+
++ 0x404
+++ 0x268 - Displayed position in race [32-bit]
+++ 0x364 - Read only total time in msec [32-bit]
+
++ 0x3804 (Non-zero pointer in arcade race)
+++ 0x0 - Set to 1 when race is finished, proceeds to show results [32-bit]</code></pre><p><div class="image"><div class="image__container"><a href="./gt4prologue-position.jpg" target="_blank" rel="noopener"><img title="The player position indicator that I will be looking for" src="./gt4prologue-position.jpg" /></a><h4 class="image__title">The player position indicator that I will be looking for</h4></div></div></p>
+<h3 id="debugger-usage-1"><strong>Debugger Usage</strong><a href="#debugger-usage-1" class="anchor-link"><span>¶</span></a></h3><ol>
+<li>Install <a href="https://pcsx2.net/downloads">PCSX2</a> emulator, <strong>make sure it&#39;s Nightly build</strong><ul>
+<li>You also must have PS2 BIOS dump to make the emulator work</li>
+<li>I will not describe initial setup steps as those are straightforward, the first launch will guide you through these</li>
+<li>Run the game to make sure it works</li>
+</ul>
+</li>
+<li>When game is running, you can open menu: Debug -&gt; Open Debugger<ul>
+<li>I also recommend you visit menu: Settings -&gt; Interface and look into picking a Theme that allows for good contrast when reading disassembly, the default Native theme puts black text on blue background for me, which is unreadable. Hopefully this will be improved in next versions. I personally picked Ruby (Black/Red) theme</li>
+</ul>
+</li>
+</ol>
+<p>The PCSX2 debugger has Memory Search in it which is enough for the examples, but you may prefer to setup <a href="#using-pcsx2-with-raintegration">RAIntegration</a> or <a href="#using-pcsx2-with-cheat-engine">Cheat Engine</a>.</p>
+<ol>
+<li>Begin targeting for a breakpoint: track down displayed player&#39;s position value address in memory:<ul>
+<li>I start at position 6th, first scan is by value Equals 6, of type 4 Bytes (32 bits), overtaking anyone to change my position to 5th, then doing Filter Search for value Equals 5. Doing the same for position 4th leaves me with only two candidates</li>
+<li>If I try to edit the value at <code>0x01FCE1F8</code> while game is paused, by using the Memory tab below - it reflects the value change on HUD, trying to edit the other candidate nearby at <code>0x1FCE1FC</code> does nothing</li>
+<li><strong>The confirmed target I will be dealing with is located at <code>0x01FCE1F8</code></strong></li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-candidates.png" target="_blank" rel="noopener"><img title="Notice that value of 04 down below" src="./pcsx2-debugger-1/pcsx2-candidates.png" /></a><h4 class="image__title">Notice that value of 04 down below</h4></div></div></p>
+<ol start="2">
+<li>Create the break-on-read breakpoint for this address:<ul>
+<li>Right Click the candidate in Memory Search or the value in the Memory tab will allow to Copy Address of it</li>
+<li>Go to the Breakpoints tab below, in the empty list of breakpoints, Right click -&gt; New</li>
+<li>Set a break-on-read breakpoint of size 4 for copied address <code>1FCE1F8</code></li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-breakpoint.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-breakpoint.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-breakpoint-set.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-breakpoint-set.png" /></a></div></div></p>
+<ol start="3">
+<li>Immediately the debugger should break because that value is rendered every frame. If I repeatedly press on <em>Run</em> button at top left of the window - it will break me into three different code instructions:</li>
+</ol>
+<pre class="language-"><code class="language-">00307360 lwc1 f03, 0x18(s1)
+...
+0030749C lwc1 f00, 0x18(s1)
+...
+003074DC lw v0, 0x18(s1)</code></pre><p>I will focus on analyzing <code>003074DC lw v0, 0x18(s1)</code> instruction instead of <code>0030749C lwc1 f00, 0x18(s1)</code> I was getting on other breaks. The latter is storing the value in floating point register <code>f00</code> (which can be seen on FPR Registers tab). Here I prefer to look into code that loads what&#39;s clearly an integer value into common <code>v0</code> register</p>
+<details class="spoiler spoiler_warning"><summary class="spoiler__header" id="the-story-below-will-have-bad-ending"><a href="#the-story-below-will-have-bad-ending"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M569.5 440C588 472 564.8 512 527.9 512H48.1c-36.9 0-60-40.1-41.6-72L246.4 24c18.5-32 64.7-32 83.2 0l239.9 416zM288 354c-25.4 0-46 20.6-46 46s20.6 46 46 46 46-20.6 46-46-20.6-46-46-46zm-43.7-165.3l7.4 136c.3 6.4 5.6 11.3 12 11.3h48.5c6.4 0 11.6-5 12-11.3l7.4-136c.4-6.9-5.1-12.7-12-12.7h-63.4c-6.9 0-12.4 5.8-12 12.7z"/></svg></div></a><strong>Warning:</strong> The story below will have bad ending</summary><section><p><p>But I think it&#39;s important to demonstrate the thought process behind the failure, that it&#39;s okay to fail and get stuck, so don&#39;t consider the reading below a waste of time.</p>
+</p></section></details><p>So the arrow points at instruction: <code>003074DC lw v0, 0x18(s1)</code>, which means: load word (8 bytes for 64-bit MIPS!) from address specified by <code>s1</code> register + offset by <code>0x18</code> into register <code>v0</code></p>
+<p>The <code>s1</code> register contains the address <code>0x1FCE1E0</code> during that moment, <em>note it</em>. The question is now: <strong>where did value in <code>s1</code> come from?</strong></p>
+<p>This isn&#39;t easy to answer this time: this debugger lacks highlighting selected registers in instructions, and as I scroll up - I do not easily notice anything writing into <code>s1</code> register, here goes my thought process:</p>
+<ul>
+<li>I remind myself that <code>s1</code> register is <a href="#register-purpose-paraphrased">preserved across function calls</a> and that means it was set inside this function, I just didn&#39;t notice where that happens yet and how</li>
+<li>Instead of checking lots of code above to find how <code>s1</code> is set, I try to Step Out of function</li>
+<li>After Steping Out, I notice that <code>s1</code> does not contain <code>0x1FCE1E0</code> value anymore, but <code>s2</code> now has it</li>
+<li>Because <code>0x1FCE1E0</code> is within <code>s2</code> now, I don&#39;t care about what happened in function I was previously at, <code>s2</code> belongs to function I&#39;m currently at, the question is now: <strong>where did value in <code>s2</code> come from?</strong></li>
+</ul>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-2.png" target="_blank" rel="noopener"><img title="After stepping out" src="./pcsx2-debugger-1/pcsx2-debugging-2.png" /></a><h4 class="image__title">After stepping out</h4></div></div></p>
+<p>I try to scroll up to see if anything writes into <code>s2</code> - and notice <code>00304100 addiu s2, s1, 0x250</code> instruction, which means: calculate a sum of value in <code>s1</code> register and constant value of <code>0x250</code>, then store it in <code>s2</code> register. I set an Execute breakpoint on that instruction to look into value of <code>s1</code> register during that moment (I have to press <em>Run</em> button to make that breakpoint activate on next frame rendered).</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-3.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-3.png" /></a></div></div></p>
+<p>Indeed <code>s2 = s1 + 0x250 = 0x1FCDF90 + 0x250 = 0x1FCE1E0</code>. So <code>0x250</code> is an offset to what might be a pointer stored in <code>s1</code>. It&#39;s also worth to remember the previously found <code>003074DC lw v0, 0x18(s1)</code> instruction, with <code>s1</code> being <code>0x1FCE1E0</code>. <code>0x250 + 0x18 = 0x268</code> matches the total offset specified in code note.</p>
+<p>Next question: <strong>where did value of <code>s1</code> and <code>0x1FCDF90</code> come from?</strong> Scrolling up and looking for <code>s1</code> wasn&#39;t productive. I try to Step Out of function again.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-4.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-4.png" /></a></div></div></p>
+<p>What&#39;s above me is <code>jalr v1</code> which is unfortunate (I&#39;m worried that it might be called with different addresses from <code>v1</code>), and none of the registers have value of <code>0x1FCDF90</code> anymore. It doesn&#39;t hurt to try to double click the <code>jalr</code> instruction to set Execute breakpoint, disable all other breakpoints (they have checkbox for that in the list), and press Run at the top right of Debugger to see what happens.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-5.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-5.png" /></a></div></div></p>
+<p>Fortunately, when that breakpoint activates, the register values are always the same. What&#39;s also interesting is that value of <code>0x1FCDF90</code> I&#39;m hunting for appears in <code>a2</code> register. Registers of <code>a</code> group are function arguments, meaning I don&#39;t have to Step into that function - the <code>a2</code> register value is passed to called function. Instead, I need to seek what wrote that value into <code>a2</code> register beforehand.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-6.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-6.png" /></a></div></div></p>
+<p>There is an instruction <code>0x002F9D7C lw a2, 0x404(s0)</code>, if I put Execute breakpoint on that and check what happens to <code>a2</code> register - it&#39;s indeed getting the desired value <code>0x1FCDF90</code>, the <code>0x404(s0)</code> indicates this value comes from address <code>0x1FCA750 + 0x404</code>, next question: <strong>where did value of <code>s0</code> and <code>0x1FCA750</code> come from?</strong></p>
+<p>When I break on that instruction, it shows that <code>a0</code> also has same value, meaning it was an argument for the function I&#39;m currently in, I should Step Out of function.</p>
+<p>And frankly, later on <em><strong>I just gave up</strong></em>, the breakpoints kept piling up as I kept Stepping Out while origins of where <code>0x1FCA750</code> came from still were not clear. <code>jalr v1</code> instructions kept coming up and started to get called with different values of <code>v1</code>, it felt like there was no end to climbing out of this rabbit hole.</p>
+<p><strong>The point is</strong>: sometimes you get stuck, and it&#39;s completely ok. Those moments either need revisiting later - maybe you missed something or was not stubborn enough, or you would try a different strategy. Instead of trying decompiler right now, there&#39;s a different approach worth looking into.</p>
+<p>You also should notice that the whole process is just answering the questions like <em>why was this register set that way</em>, or <em>where did this value originate from</em>. Answering those questions naturally make you move upwards in terms of called functions (call stack).</p>
+<h4 id="combine-debugger-efforts-with-constant-search-of-found-pointers">Combine debugger efforts with constant search of found pointers<a href="#combine-debugger-efforts-with-constant-search-of-found-pointers" class="anchor-link"><span>¶</span></a></h4><p>What I totally could do is that when I found value of <code>0x1FCDF90</code> - I would go to Memory Search and search for this value by Constant, this is what I get:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-8.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-8.png" /></a></div></div></p>
+<p>That&#39;s only one candidate, and I&#39;m absolutely sure there would be some code that would be reading this pointer, and before that code can read this pointer - it would have to get or calculate the address of <code>0x1FCAB54</code> somehow.</p>
+<p>So what I do now is to set a break-on-read breakpoint of size 4 at address <code>0x1FCAB54</code>, then see what happens.</p>
+<p>I land on different instructions, including the previously mentioned <code>0x002F9D7C lw a2, 0x404(s0)</code>, what&#39;s stored in <code>s0</code> here is likely a pointer and it&#39;s value is <code>0x1FCA750</code>. <em><strong>I can repeat the process</strong></em> and search for <code>0x1FCA750</code> in memory:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-9.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-9.png" /></a></div></div></p>
+<p>That&#39;s a lot of candidates, and among them is <code>0x009C1A9C</code>, which matches the code note.</p>
+<details class="spoiler spoiler_question"><summary class="spoiler__header" id="why-not-pick-that-0x005acb70-in-the-lower-address-range"><a href="#why-not-pick-that-0x005acb70-in-the-lower-address-range"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> Why not pick that 0x005ACB70 in the lower address range?</summary><section><p><p>Funny enough, that&#39;s what I did when I initially worked on this achievement set, and I picked that address because it seemed good enough and <em>it was in lower address range</em>. It was like that until I started to write this blogpost.</p>
+<p>What I didn&#39;t do, was to put a break-on-read breakpoint at <code>0x005ACB70</code> and notice that I land at instructions like these, and that <code>sp</code> register, the stack pointer has extremely close value of <code>0x005ACB40</code></p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-stack-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-stack-1.png" /></a></div></div></p>
+<p>It&#39;s quite amazing how in practice, the achievements still worked, but it&#39;s important to prove it to you that this was not a reliable solution, <a href="#avoid-using-addresses-close-to-the-tip-of-the-stack-during-achievement-development">that warning was not a joke</a>.</p>
+<p>With break-on-read breakpoint set at <code>0x005ACB70</code> and the game paused, look at how value changes at that address as I keep pressing <em>Run</em> button, at the top left of the Memory view:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-stack-2.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-stack-2.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-stack-3.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-stack-3.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-stack-4.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-stack-4.png" /></a></div></div></p>
+<p>So the desired pointer value is not always there. Even if this happens between the moments when achievement logic is actually checked - this is still technically unreliable, I may never know for sure if there won&#39;t be some edge case that causes non-pointer value to be present during the check, it doesn&#39;t matter anyway, because rule is: <em>you do not put addresses near stack pointer tip into your achievement logic</em>.</p>
+<p>Several achievements about finishing the race in the 1st place previously relied on that <code>0x005ACB70</code> address, and I swear that <a href="https://retroachievements.org/achievement/251985">during one of the races</a> - achievement did not unlock despite me coming 1st. Who knows, maybe this was related all along.</p>
+</p></section></details><p>Just because I&#39;m aware that this matches the original code note doesn&#39;t mean I should stop right here. If I just start using this address in achievement logic - I risk getting into issue highlighted in question above. So I will put a break-on-read breakpoint on <code>0x009C1A9C</code> and see what code it leads to. It&#39;s also worth checking if there are more pointers behind that address - those may act as backup in case if shorter pointer chain is not reliable enough. It also serves as additional research practice anyway.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-10.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-10.png" /></a></div></div></p>
+<p>The previously found <code>0x009C1A9C</code> is offset by <code>0x3C</code> to <code>0x009C1A60</code> as specified by <code>v0</code> register. Not pictured: <code>sp</code> register value right now is: <code>0x005B3A20</code>, which is far enough, so it&#39;s safe to continue research. I will do memory search by constant of <code>0x009C1A60</code> now:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-11.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-11.png" /></a></div></div></p>
+<p><code>0x004FA8C4</code> looks promising, it&#39;s <em>relatively</em> far from previously seen stack pointer value too. Once again I&#39;d like to know where that <code>0x004FA8C4</code> address originates from, so I will need a breakpoint on it.</p>
+<p>This time however, setting break-on-read breakpoint was not enough, it just never hit for me. So I also made it break-on-write too, and it hit when starting or exiting the race:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-debugging-12.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-debugging-12.png" /></a></div></div></p>
+<p>I&#39;m sure this is the origin of pointer chain. <code>lui v0, 0x0050</code> means to load upper immediate [value] of 0x0050 into <code>v0</code> register, with lower part of the value being zeroes, this resulted in value of <code>0x00500000</code> being loaded into <code>v0</code> as you can see on screenshot above.</p>
+<p>There&#39;s <a href="#branch-delays">Branch Delay</a>: the instruction <code>sw a0, -0x573C(v0)</code> below <code>jr ra</code> will also be executed. It will read the value by negative offset of <code>-0x573C</code> to address stored in <code>v0</code> which is <code>0x00500000</code>, and store the value in <code>a0</code> register.</p>
+<p><code>0x00500000 - 0x573C = 0x004FA8C4</code> which is what I previously seen in Memory Search.</p>
+<details class="spoiler spoiler_question"><summary class="spoiler__header" id="arent-we-supposed-to-avoid-negative-offsets-how-come-its-negative-here"><a href="#arent-we-supposed-to-avoid-negative-offsets-how-come-its-negative-here"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> Aren&apos;t we supposed to avoid negative offsets, how come it&apos;s negative here?</summary><section><p><p>The <a href="#negative-offset-remark">negative offset remark</a> was about <em>structures of data</em> from programmer&#39;s point of view. What&#39;s seen here got nothing to do with that. What <em>compiler</em> did and what code it produced ain&#39;t exactly for us to argue with, and it just so happened that it was convenient enough to put what seems like global variables below <code>0x00500000</code>, which <em>naturally</em> results in such offsets.</p>
+<p>You may wonder: if compiler knows better, why not have single instruction that would store the exact address into register? Answer lies within the fact that all MIPS instructions are 32-bit (4 bytes) long. The value <code>0x004FA8C4</code> itself needs atleast <em>three</em> bytes, so it just won&#39;t fit.</p>
+<p>So the compiler is smart enough to calculate the final address with two instructions (ignore <code>jr ra</code>), and those two fit. Here&#39;s the screenshot from Ghidra disassembly, look into machine code on the left:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-1/pcsx2-instruction-size.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-1/pcsx2-instruction-size.png" /></a></div></div></p>
+</p></section></details><p>The research ends here, because this address of <code>0x004FA8C4</code> originated from basically a constant value of <code>0x00500000</code>. This situation is quite similar to reading from <code>gp</code> pointer that was seen in PSX example.</p>
+<p>I could&#39;ve used <code>0x004FA8C4</code> address in achievement code, but in practice I noticed that starting the pointer chain from <code>0x009C1A9C</code> was enough. So the final achievement code would look like:</p>
+<pre class="language-"><code class="language-">AddAddress 32-bit 0x9c1a9c
+AddAddress 32-bit 0x404
+Mem        32-bit 0x268     .. conditions ..</code></pre><p>The decompiler example is not provided for this one, I didn&#39;t find it as interesting compared to the next case.</p>
+<h2 id="pointer-x4-ps2-game-pcsx2"><strong>Pointer x4, PS2 game, PCSX2</strong><a href="#pointer-x4-ps2-game-pcsx2" class="anchor-link"><span>¶</span></a></h2><p>Let&#39;s look into a bigger pointer chain in regular <a href="https://retroachievements.org/game/20580">Gran Turismo 4</a>. I&#39;m interested to know where the last lap time is stored, it&#39;s needed for time trial achievements. Here&#39;s the excerpt from code note:</p>
+<pre class="language-"><code class="language-">0x621cb4
+
+Pointer [32-bit]
+
++ 0x00 - Amount of laps to complete [32-bit]
+
++ 0x60 - Pointer [32-bit]
+++ 0x08 - Pointer [32-bit]
++++ 0x00 - Pointer to player's in-game data, lookup next 4 bytes for AI cars [32-bit]
+++++ 0x18 - Pointer [32-bit]
++++++ 0x56A - Car is controlled by AI [8-bit]
++++++ 0x56B - Car is controlled by AI during rolling start (?) [8-bit]
+++++ 0x20 - Car ID [32-bit]
+++++ 0x38 - Car Color ID [8-bit]
+++++ 0x1AC - Lap time array index where the lap time will be written, in other words - amount of laps passed [32-bit]
+++++ 0x11DC - Last Lap time in msec [32-bit]</code></pre><p><div class="image"><div class="image__container"><a href="./gt4-last-lap.jpg" target="_blank" rel="noopener"><img title="The last lap time that I will be looking for" src="./gt4-last-lap.jpg" /></a><h4 class="image__title">The last lap time that I will be looking for</h4></div></div></p>
+<h3 id="debugger-usage-2"><strong>Debugger usage</strong><a href="#debugger-usage-2" class="anchor-link"><span>¶</span></a></h3><p>Assume I already tracked down the value for that displayed last lap time. I choose to put a break-on-write breakpoint for it and make a save state right before finish line so it will be easy to hit:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-2/pcsx2-debugging-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-2/pcsx2-debugging-1.png" /></a></div></div></p>
+<p>It shows an <code>0x40</code> offset to pointer stored in <code>s1</code>, next question: where did value of <code>0x1BE2CFC</code> in <code>s1</code> come from? Looking several instructions above, there&#39;s: <code>003B6A40 addiu s1, s0, 0x119C</code>. It relies on register value of <code>s0</code> so it&#39;s worth answering the question of where value of <code>s0</code> came from, too, which is right above: <code>003B6A38 daddu s0, a0, zero</code>.</p>
+<p>So by setting an Execute breakpoint at instruction <code>003B6A38</code> and crossing the finish line again, I see that register <code>a0</code> has value of <code>0x1BE1B60</code>, it will be copied to <code>s0</code> register. Then value of <code>0x1BE1B60 + 0x119C</code> will be set to <code>s1</code> register. What you should take note of, is that the pointer worth dealing with is not <code>0x1BE2CFC</code>, but <code>0x1BE1B60</code>, and entire offset for achievement code will be <code>0x119C + 0x40 = 0x11DC</code>, which matches the code note.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-2/pcsx2-debugging-1a.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-2/pcsx2-debugging-1a.png" /></a></div></div></p>
+<p>Next question: where did <code>0x1BE1B60</code> passed in <code>a0</code> originate from? This time instead of just Stepping Out, I can open Active Call Stack tab and click on PC address of the second row - that&#39;s where I will land if I were to Step Out.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-2/pcsx2-debugging-2.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-2/pcsx2-debugging-2.png" /></a></div></div></p>
+<p>After visiting <code>0x003C0D10</code> instruction, I can see the <code>a0</code> register being set right before <code>003C0D08 jal 0x003B6A30</code>: <code>003C0D04 lw a0, 0x0(v0)</code>. I&#39;d ask myself where did value of <code>v0</code> come from, look at more code above, and there&#39;s quite a lot happening, I cross the finish line again with breakpoint set at <code>003C0CD4</code>:</p>
+<pre class="language-"><code class="language-">                             ; a0 is 0x1BE11D0, v0 is 0
+003C0CD4 daddu s0,a0,zero    ; s0 = a0 = 0x1BE11D0
+...
+003C0CF4 lw a0,0x60(s0)      ; a0 = [0x1BE11D0 + 0x60] = 0xAC4510
+003C0CF8 addiu s0,s0,0x928   ; s0 = 0x1BE11D0 + 0x928 = 0x1BE1AF8
+003C0CFC lw v1,0x8(a0)       ; v1 = [0xAC4510 + 0x8] = 0xAC4534
+003C0D00 addu v0,v0,v1       ; v0 = 0 + 0xAC4534 = 0xAC4534
+003C0D04 lw a0,0x0(v0)       ; a0 = [0xAC4534] = 0x1BE1B60
+003C0D08 jal 0x003B6A30</code></pre><p>Values wrapped in <code>[ ... ]</code> are implied to be dereferenced (you follow the resulting address).</p>
+<p>That&#39;s a huge treat, now by looking closely at where values originate from, entire chain for this snippet looks like this:</p>
+<p><code>[0x1BE11D0 + 0x60] -&gt; [0xAC4510 + 0x8] -&gt; [0xAC4534 + 0x0] -&gt; 0x1BE1B60</code></p>
+<p>So this results in 0x60, 0x8 and 0x0 offsets respectively, and additional offset of <code>0x119C</code> previously found.</p>
+<p>Next question: where did <code>0x1BE11D0</code> value passed in <code>a0</code> originate from? Not gonna lie: it stopped being easy to figure the disassembly in above function calls, and the call stack in general looked so big that I decided to give up, and <a href="#combine-debugger-efforts-with-constant-search-of-found-pointers">Memory Search</a> the <code>0x1BE1B60</code> instead:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-2/pcsx2-debugging-3.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-2/pcsx2-debugging-3.png" /></a></div></div></p>
+<p>The <code>0x621CB4</code> that was mentioned in original code note is already here, good, but let&#39;s validate it. I managed to break-on-write on that address when I exited the race, and landed on this code:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-debugger-2/pcsx2-debugging-4.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-debugger-2/pcsx2-debugging-4.png" /></a></div></div></p>
+<p>The research ends here: <code>0x621CB4</code> originated from a constant value of <code>0x00620000</code> and <code>0x1CB4</code> added to it (mind the <a href="#branch-delays">Branch Delay</a> at <code>003DEC48</code>), which then leads to previously found pointer <code>0x1BE11D0</code>.</p>
+<p>The final achievement code would look like:</p>
+<pre class="language-"><code class="language-">AddAddress 32-bit 0x621CB4
+AddAddress 32-bit 0x60
+AddAddress 32-bit 0x08
+AddAddress 32-bit 0x0
+Mem        32-bit 0x11DC     .. conditions ..</code></pre><h3 id="decompiler-usage-1"><strong>Decompiler usage</strong><a href="#decompiler-usage-1" class="anchor-link"><span>¶</span></a></h3><p>This section assumes you&#39;ve seen the <a href="#decompiler-usage">PSX example</a> and are comfortable navigating Ghidra CodeBrowser.</p>
+<ol>
+<li><p>During the in-game moment you wish to analyze while PCSX2 emulator is running, dump the 32MB of PS2 RAM <a href="#dumping-pcsx2-memory-with-save-states">from save states</a> or by <a href="#dumping-pcsx2-memory-with-cheat-engine">using Cheat Engine</a></p>
+<ul>
+<li>The memory dump is preferred for same reasons <a href="#why-analyze-ram-dump-instead-of-original-executable">as described here</a></li>
+</ul>
+</li>
+<li><p><a href="#installing-ghidra">Install Ghidra</a></p>
+</li>
+<li><p>Install <a href="https://github.com/chaoticgd/ghidra-emotionengine-reloaded/releases">ghidra-emotionengine-reloaded</a> extension, see <a href="#installing-ghidra-extensions">Installing Ghidra Extensions</a> if needed</p>
+</li>
+<li><p>Run Ghidra, create new Project: File -&gt; New Project, Non-Shared project, specify project name and dedicated directory for the project, then Finish. The project you&#39;ve created is now active</p>
+</li>
+<li><p>Import the PS2 memory dump you got previously: File -&gt; Import File, or just drag and drop the file on Project window</p>
+<ul>
+<li>Format: Raw Binary</li>
+<li>Language: r5900 - this one is available if you installed ghidra-emotionengine-reloaded extension</li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-import-file-pcsx2.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-import-file-pcsx2.png" /></a></div></div></p>
+<ol start="6">
+<li>Import summary will be shown, close it. With imported file selected, double click it, or click on the Dragon icon to open CodeBrowser:</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-active-project-pcsx2.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-active-project-pcsx2.png" /></a></div></div></p>
+<ol start="7">
+<li><p>You will be prompted to analyze the file: click Yes. If you missed this dialog, you can revisit menu in the CodeBrowser: Analysis -&gt; Auto Analyze</p>
+</li>
+<li><p>Default analyzer options should be good enough. Compared to PSX example, I wouldn&#39;t tick <strong>Aggressive Instruction Finder (Prototype)</strong> just because it takes awhile for it to work, and it could be ran afterwards if needed anyway. Click Analyze, you should notice the process going at bottom right of the CodeBrowser, wait until it&#39;s done.</p>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-analyze.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-analyze.png" /></a></div></div></p>
+<p>Now instead of reading diassembly ourselves, let&#39;s see how Ghidra decompiled it instead by visiting previously seen instruction at <code>0x003B6A38</code>:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-1.png" /></a></div></div></p>
+<p>It calculated the total offset of <code>0x11DC</code> correctly while also matching it against <code>param_1</code>, which does match the <code>a0</code> register value of <code>0x1BE1B60</code> <a href="./pcsx2-debugger-2/pcsx2-debugging-1a.png">(remember?)</a>.</p>
+<p>It presented the offset as <code>&amp;DAT_000011dc</code> which doesn&#39;t make much sense. I guess Ghidra doesn&#39;t know better when you try to apply an offset to a regular <code>int param_1</code>. It&#39;s possible to make the decompiler output more readable: Right Click the function name -&gt; Edit Function Signature:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-edit-function-signature-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-edit-function-signature-1.png" /></a></div></div></p>
+<p>In the dialog that now opened, the function header is editable. The <code>a0</code> register value that corresponds to <code>param_1</code> was <code>0x1BE1B60</code>, which is clearly a pointer. So I could just specify param_1 as pointer to... something, so I set it to <code>char *param_1</code> instead of <code>int param_1</code> <a href="https://stackoverflow.com/a/52699313">(explanation for using char *)</a></p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-edit-function-signature-2.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-edit-function-signature-2.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-edit-function-signature-3.png" target="_blank" rel="noopener"><img title="Renamed int param_1 to char *param_1" src="./pcsx2-decompiler-1/ghidra-edit-function-signature-3.png" /></a><h4 class="image__title">Renamed int param_1 to char *param_1</h4></div></div></p>
+<p>This resulted in more sensible decompiler output, it also replaced some register names in disassembly with param names:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-2.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-2.png" /></a></div></div></p>
+<details class="spoiler spoiler_question"><summary class="spoiler__header" id="can-we-be-more-specific"><a href="#can-we-be-more-specific"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> Can we be more specific?</summary><section><p><p>If I assume that 0x11DC is an offset to some structure, I can create partial definition of that structure in Ghidra and specify it instead of <code>char *</code>. This will give name to the offset in the decompiler output. It&#39;s not overly useful for achievement development because you&#39;d mostly care about offsets, but it&#39;s worth mentioning this functionality for people learning Ghidra.</p>
+<p>By default, there&#39;s Data Type Manager window located on bottom left of CodeBrowser. If you don&#39;t have it, you can bring it up by opening menu: Window -&gt; Data Type Manager.</p>
+<p>Since the created structure belongs to analyzed file, Right Click on eeMemory.bin -&gt; New -&gt; Structure</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-data-type-manager-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-data-type-manager-1.png" /></a></div></div></p>
+<p>In the dialog that now opened, in lower part of it I give the structure a random name <code>SomeStuff</code>. Next, a new field has to be added by clicking that <code>+</code> button on the toolbar, same can be achieved by Right Clicking the field list -&gt; Insert Undefined byte.</p>
+<p>An actual undefined byte will appear as a row in the table, I can double click on it&#39;s DataType and specify <code>char[0x11DC]</code>, which will convert it into <code>char[4572]</code>. This is data I don&#39;t know and neither care about, I only want to define data that comes <code>0x1DDC</code> bytes after, so I add one more undefined byte after and give it a type of <code>int</code> and name <code>lastLapTime</code>.</p>
+<p>Press on the disk icon near <code>+</code> to save the changes, which is same as Right Clicking the field list -&gt; Apply Edits.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-data-type-manager-2.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-data-type-manager-2.png" /></a></div></div></p>
+<p>Now I can revisit the function header and specify created struct as a type, see how it affected the decompiler output:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-data-type-manager-3.png" target="_blank" rel="noopener"><img title="Renamed char *param_1 to SomeStuff *param_1" src="./pcsx2-decompiler-1/ghidra-data-type-manager-3.png" /></a><h4 class="image__title">Renamed char *param_1 to SomeStuff *param_1</h4></div></div></p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-data-type-manager-4.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-data-type-manager-4.png" /></a></div></div></p>
+</p></section></details><p>I also decided to rename this function to something like <code>deep_1_003b6a30</code>. If I&#39;m doing one-off throwaway research for achievement development, I could just mark relevant functions with some name and the number near it would be like reverse depth. The higher the number is - the more functions it takes to get to the function call it was originated from. All functions found by Ghidra, including the ones you&#39;ve renamed, can be located in Symbol Tree, which is on the left by default (and can be brought up again via menu: Window -&gt; Symbol Tree).</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-rename-function-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-rename-function-1.png" /></a></div></div></p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-rename-function-2.png" target="_blank" rel="noopener"><img title="And then you can easily search your functions in Symbol Tree" src="./pcsx2-decompiler-1/ghidra-rename-function-2.png" /></a><h4 class="image__title">And then you can easily search your functions in Symbol Tree</h4></div></div></p>
+<p>Just like in Debugger, next step is checking what called this function, and it&#39;s time to look into XREF - cross references. Ghidra allows you to find all calls to current function, or if there&#39;s some global/static variable - you could check all code that references it.</p>
+<p>For this marked <code>deep_1</code> function it&#39;s easy to check it&#39;s start of disassembly: there&#39;s lone <code>XREF[1]: FUN_003c0cc8:003c0d08(c)</code> which is highlighted in screenshot below. Double clicking it will make you land on <code>deep_1</code> call, and it&#39;s indeed <a href="./pcsx2-debugger-2/pcsx2-debugging-2.png">the exactly same one</a> that was seen in Debugger section.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-xref-1.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-xref-1.png" /></a></div></div></p>
+<p>Alternatively, you can Right Click on most things in both Decompiler and Diassembly, to select References - Find References to <em>whatever</em>. This shows a dialog with same lone call.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-xref-2.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-xref-2.png" /></a></div></div></p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-xref-3.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-xref-3.png" /></a></div></div></p>
+<p>After following the call, I immediately renamed the function into <code>deep_2_003c0cc8</code>:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-3.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-3.png" /></a></div></div></p>
+<p>The previously seen <code>0x11DC</code> offset depended on <code>param_1</code> passed to <code>deep_1</code>, and here it&#39;s stored in <code>pcVar1</code> on line 9. The C code that calculates value of <code>pcVar1</code> is hard to read because of nested derefences, but you can recognize the previously seen offsets too. It&#39;s possible to make more readable if I write it like this:</p>
+<pre class="language-"><code class="language-">pcVar1 = *(char **)(
+    param_2 * 4 + *(int *)(
+        *(int *)(
+            param_1 + 0x60
+        ) + 8
+    ));</code></pre><p>You have to read it starting from <code>param_1 + 0x60</code> and then head outwards. The presence of <code>char **</code> and multiplication of <code>param_2 * 4</code> implies dealing with an array, but original case seen in Debugger usage had <code>param_2</code> being 0.</p>
+<p>This leaves only <code>param_1</code> being interesting enough, and you&#39;d have to traverse function calls from above to figure out where it originated from, similar as when it was done in Debugger.</p>
+<p>Unfortunately, just like in Debugger - it quickly becomes tough to figure out in Ghidra too. So if you were reading decompiler output instead of disassembly - you could do same decision to do the memory search on found pointer.</p>
+<details class="spoiler spoiler_question"><summary class="spoiler__header" id="and-yet-how-bad-is-it-if-you-go-deeper"><a href="#and-yet-how-bad-is-it-if-you-go-deeper"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> And yet, how bad is it if you go deeper?</summary><section><p><p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-4.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-4.png" /></a></div></div></p>
+<p><code>deep_2_003c0cc8</code> has only one XREF to function I called <code>deep_3_0035e550</code>. The <code>param_1</code> to <code>deep_2</code> came from <code>iVar1</code> which came from <code>param_1</code> of <code>deep_3</code>, if I check XREFs to <code>deep_3</code>:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-4a.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-4a.png" /></a></div></div></p>
+<p>The <code>deep_3</code> has 6 XREFs, which one to look into? You&#39;d have to revisit the Debugger and check the callstack:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-4b.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-4b.png" /></a></div></div></p>
+<p><code>003F5C04</code> points at the instruction after the function call, and it&#39;s close to <code>003f5bfc</code>. Clicking that one shows the function at <code>003f5b80</code>:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-5.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-5.png" /></a></div></div></p>
+<p>Once again it&#39;s just a passthrough of <code>param_2</code>, so you&#39;d try to check XREFs for this function, only to find that there&#39;s none. If you&#39;re to follow the call stack in the Debugger to figure out what called <code>deep_4_003f5b80</code>, you&#39;ll find out that it&#39;s an indirect <code>jalr v1</code> call:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-5a.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-5a.png" /></a></div></div></p>
+<p>And here&#39;s how it looks in Decompiler (green part):</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-6.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-6.png" /></a></div></div></p>
+<p><code>(code) **</code> implies dealing with function pointer. It&#39;s not pictured, but <code>piVar14</code> is actually just <code>param_2</code>. What&#39;s seen here could some giant structure passed that has function pointer on it. It&#39;s not a big deal that we don&#39;t see exact function called, all that matters is noticing the first param passed: <code>fVar16</code>, it&#39;s not pictured: but <code>fVar16</code> depends on calculations that also depend <code>param_1</code>, so you could choose to continue traversing the call stack upwards and try to find origins of the pointer passed through the params.</p>
+<p>It took me 14 (!) functions to go through to find this:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-7.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-7.png" /></a></div></div></p>
+<p>A constant of <code>0x3c888888</code> that will be twisted and offset in many different ways as it&#39;s passed to the highlighted function. I didn&#39;t bother to write a chain of calculations that&#39;s been done with it, therefore I&#39;m not 100% positively sure that I&#39;m correct with my finding. And overall: original Memory Search method of finding the pointer then validating it was much more practical compared to this rabbit hole that also may result in longer pointer chain. Pick your battles!</p>
+</p></section></details><p><strong>The point is</strong>: for casual achievement development Ghidra is mostly gonna be an additional tool in your arsenal, merely to help reading disassembly and systemize your findings. It&#39;s still most efficient to follow path of least resistance: research as much as you can before you hit a wall, then proceed to memory search the pointer value and see if that&#39;s enough.</p>
+<p>As a bonus, here&#39;s how Ghidra displays that small function <a href="./pcsx2-debugger-2/pcsx2-debugging-4.png">that was seen before</a>, and if you wish - you could check all XREFs of that <code>PTR_DAT</code>:</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-8.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-decompiler-1/ghidra-decompiler-pcsx2-8.png" /></a></div></div></p>
+<h2 id="pointer-psp-game-ppsspp"><strong>Pointer, PSP game, PPSSPP</strong><a href="#pointer-psp-game-ppsspp" class="anchor-link"><span>¶</span></a></h2><p>The example for PSP will be simple, it&#39;s merely to explore the workflow and note some differences.</p>
+<p>PSP CPU is <a href="https://www.psdevwiki.com/psp/Allegrex">Allegrex</a>, based on R4000 which is still 32-bit MIPS. Compared to CPUs of PSX and PS2, more registers can be used for function arguments, to quote the wiki page:</p>
+<blockquote>
+<p><em>Arguments are passed through following registers: <code>$a0, $a1, $a2, $a3, $t0, $t1, $t2, $t3</code>, then on the stack</em></p>
+</blockquote>
+<p>It&#39;s also important to note quite annoying <a href="https://www.psdevwiki.com/psp/Tachyon#Memory_mapping">memory mapping</a>, with 24MB of user memory you&#39;d care about being mapped at <code>0x08800000</code>, which for RAIntegration and rcheevos will actually be at <code>0x0</code>. Here&#39;s another example: what RetroAchievement developers consider <code>0xACAAFE</code> would be located at <code>0x092CAAFE</code> from PSP and emulator&#39;s point of view.</p>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-memory-view.png" target="_blank" rel="noopener"><img title="Memory regions displayed in PPSSPP" src="./ppsspp-memory-view.png" /></a><h4 class="image__title">Memory regions displayed in PPSSPP</h4></div></div></p>
+<p>For this example I&#39;m revisiting <a href="https://retroachievements.org/game/3224">Wipeout Pure</a>, fellow developer of this achievement set once asked for help tracking down the pointer, and it ended up an easy job with debugger used. Here&#39;s the code note:</p>
+<pre class="language-"><code class="language-">0xb17798
+
+pointer [32-bit]
++ 0x21C4 - zones cleared [16-bit]
++ 0x21C6 - perfect zones cleared [16-bit]
++ 0x21C8 - laps cleared [16-bit]
++ 0x21CA - perfect laps cleared [16-bit]
++ 0x21D0 - score [32-bit signed]</code></pre><p><div class="image"><div class="image__container"><a href="./wipeout-pure-score.jpg" target="_blank" rel="noopener"><img title="The score value I will be looking for in Zone mode" src="./wipeout-pure-score.jpg" /></a><h4 class="image__title">The score value I will be looking for in Zone mode</h4></div></div></p>
+<h3 id="debugger-usage-3"><strong>Debugger usage</strong><a href="#debugger-usage-3" class="anchor-link"><span>¶</span></a></h3><p>Install <a href="https://www.ppsspp.org/download/">PPSSPP</a> emulator and run your game to make sure it works. Emulator works out of box very well and doesn&#39;t require much of additional setup.</p>
+<p>The real problem is lack of Memory Search that PCSX-Redux and PCSX2 have, and at the moment of writing this blogpost - PPSSPP does not support RAIntegration either. This leaves you with using <strong>Cheat Engine</strong> for tracking down values in memory and targeting for a breakpoint.</p>
+<p>When game is running, you can open menu: Debug -&gt; Copy PSP memory base address, <em>note it</em>. In my case it was <code>00000234c3360000</code></p>
+<p>With Cheat Engine attached to <code>PPSSPPWindows64.exe</code>, search the values you want <strong>starting from</strong>: <code>BaseAddress + 8800000</code> <strong>stopping at</strong>: <code>BaseAddress + 8800000 + 1800000</code></p>
+<p>For me the value at <code>0x234CC8F2BA0</code> was the one I needed, afterwards I have to subtract the previously noted base address from it: <code>0x234CC8F2BA0 - 00000234c3360000 = 0x9592BA0</code>. <strong>The confirmed target I will be dealing with is located at <code>0x9592BA0</code></strong></p>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-cheat-engine.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-cheat-engine.png" /></a></div></div></p>
+<p>Now in PPSSPP I can open menu: Debug -&gt; Disassembly (CTRL+D).</p>
+<ul>
+<li>Click on Breakpoints tab at the bottom, in the empty list of breakpoints: Right click -&gt; Add New</li>
+<li>Set a break-on-write breakpoint of size 4 for noted address: <code>0x9592BA0</code></li>
+<li>The score increases when game is unpaused in Zone mode, so unpause the game - breakpoint should activate</li>
+</ul>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-debugger/ppsspp-debugger-0.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-debugger/ppsspp-debugger-0.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./ppsspp-debugger/ppsspp-debugger-breakpoint.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-debugger/ppsspp-debugger-breakpoint.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./ppsspp-debugger/ppsspp-debugger-1.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-debugger/ppsspp-debugger-1.png" /></a></div></div></p>
+<p>Immediately the <code>0881C7F8 sw a1, 0x21D0(a0)</code> instruction indicates the <code>0x21D0</code> offset to pointer stored at <code>a0</code>: <code>0x095909D0</code>, the offset matches the original code note. Originally when I helped with this, I didn&#39;t bother researching where that pointer originated from via code, and went to Memory search for <code>0x095909D0</code> instead:</p>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-debugger/ppsspp-candidates.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-debugger/ppsspp-candidates.png" /></a></div></div></p>
+<p>I give the first candidate a try, if you subtract previously found base address, it becomes: <code>0x234CBE77798 - 00000234c3360000 = 0x8B17798</code>, which matches the original code note if you get rid of the prefix.</p>
+<p>Just like in previous examples, it wouldn&#39;t hurt to validate this pointer using Debugger, so I put the break-on-read breakpoint of size 4 at <code>0x8B17798</code> and see what happens:</p>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-debugger/ppsspp-debugger-2.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-debugger/ppsspp-debugger-2.png" /></a></div></div></p>
+<p>It sets constant value of <code>0x8B10000</code> to register <code>a0</code>, then reads the value at offset of <code>0x7798</code>, which is same if you read straight from constant address of <code>0x8B17798</code>. The <code>sp</code> register also shows address that&#39;s very far away from this one, so this is a good and safe finding. The final achievement code would look like:</p>
+<pre class="language-"><code class="language-">AddAddress 32-bit 0xB17798   &  0x1ffffff      // the bitwise AND is to get rid of prefix
+Mem        32-bit 0x21D0     .. conditions ..</code></pre><h3 id="decompiler-usage-2"><strong>Decompiler usage</strong><a href="#decompiler-usage-2" class="anchor-link"><span>¶</span></a></h3><p>This section assumes you&#39;ve seen the <a href="#decompiler-usage">PSX example</a> and are comfortable navigating Ghidra CodeBrowser.</p>
+<ol>
+<li>During the in-game moment you with to analyze while PPSSPP emulator is running, dump the 24MB of PSP RAM by opening menu: Debug -&gt; Memory View (CTRL+M), then Right click on any value -&gt; Dump...<ul>
+<li>Location has to be set at RAM, correct Start and Size values are set for you automatically</li>
+<li>Include jit checks and replacement option must be off</li>
+<li>The memory dump is preferred for same reasons <a href="#why-analyze-ram-dump-instead-of-original-executable">as described here</a></li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-debugger/ppsspp-memory-dump.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-debugger/ppsspp-memory-dump.png" /></a></div></div></p>
+<ol start="2">
+<li><a href="#installing-ghidra">Install Ghidra</a></li>
+<li>Install <a href="https://github.com/kotcrab/ghidra-allegrex/releases">ghidra-allegrex</a>, see <a href="#installing-ghidra-extensions">Installing Ghidra Extensions</a> if needed</li>
+<li>Run Ghidra, create new Project: File -&gt; New Project, Non-Shared project, specify project name and dedicated directory for the project, then Finish. The project you&#39;ve created is now active</li>
+<li>Import the PSP memory dump you got previously: File -&gt; Import File, or just drag and drop the file on Project window<ul>
+<li>Format: Raw Binary</li>
+<li>Language: Allegrex - this one is available if you installed ghidra-allegrex extension</li>
+<li><strong>Important!</strong> Click <strong>Options...</strong> and change the Base Address from <code>00000000</code> to <code>08800000</code> so it matches the start of User memory region. If you don&#39;t do this - it will screw with the analysis later</li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-1/ghidra-import-file-ppsspp.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-1/ghidra-import-file-ppsspp.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./ppsspp-decompiler-1/ghidra-import-file-base-ppsspp.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-1/ghidra-import-file-base-ppsspp.png" /></a></div></div></p>
+<ol start="6">
+<li>Import summary will be shown, close it. With imported file selected, double click it, or click on the Dragon icon to open CodeBrowser:</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-1/ghidra-active-project-ppsspp.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-1/ghidra-active-project-ppsspp.png" /></a></div></div></p>
+<ol start="7">
+<li><p>You will be prompted to analyze the file: click Yes. If you missed this dialog, you can revisit menu in the CodeBrowser: Analysis -&gt; Auto Analyze</p>
+</li>
+<li><p>Default analyzer options should be good enough. Compared to PSX example, I wouldn&#39;t tick <strong>Aggressive Instruction Finder (Prototype)</strong> just because it takes awhile for it to work, and it could be ran afterwards if needed anyway. Click Analyze, you should notice the process going at bottom right of the CodeBrowser, wait until it&#39;s done.</p>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-1/ghidra-analyze.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-1/ghidra-analyze.png" /></a></div></div></p>
+<p>Now the previously seen code can be revisited in Decompiler:</p>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-1/ghidra-ppsspp-decompiler-1.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-1/ghidra-ppsspp-decompiler-1.png" /></a></div></div></p>
+<p>There isn&#39;t much of interest here besides trying to follow XREFs to see what calls this function, which don&#39;t reveal anything resembling the original code note. If I take a note of Call Stack (Stack frames tab) in PPSSPP debugger, I can notice the odd ones at the bottom:</p>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-1/ghidra-ppsspp-decompiler-2.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-1/ghidra-ppsspp-decompiler-2.png" /></a></div></div></p>
+<p>Following the code at <code>0x08893284</code> reveals recursive calls and presence of <code>while (true)</code> loop, line 11 apparently also can lead to calling same shown function recursively. Point is, it&#39;s fortunate I could get away with Memory Searching the pointer value during the original job, because just reading the disassembly by following the code upwards would only lead to this loop and figuring out how it started in the first place, which is more tough. The point of this section was more to show how to setup Ghidra specifically for PPSSPP.</p>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-1/ghidra-ppsspp-decompiler-3.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-1/ghidra-ppsspp-decompiler-3.png" /></a></div></div></p>
+<h3 id="decompiler--debugger-usage"><strong>Decompiler + Debugger usage</strong><a href="#decompiler--debugger-usage" class="anchor-link"><span>¶</span></a></h3><p>The <a href="https://github.com/kotcrab/ghidra-allegrex/tree/master#ppsspp-debugger-integration">README for ghidra-allegrex</a> mentions support for Ghidra Debugger. This one is quite a killer, because you can disassemble and decompile contents of PSP RAM while also matching it against original EBOOT.PBP</p>
+<p>Ghidra Debugger will also allow you to set break points, step through and over instructions just like in PPSSPP, all thanks to PPSSPP communicating with Ghidra Debugger via WebSocket connection.</p>
+<ol>
+<li><p>In PPSSPP, open Settings -&gt; Tools -&gt; Developer tools</p>
+<ul>
+<li>Enable Dump decrypted EBOOT.BIN on game boot</li>
+<li>Enable Allow remote debugger</li>
+</ul>
+</li>
+<li><p>Run the game, the decrypted EBOOT.BIN appeared for me at: <code>C:\Users\%your_username%\Documents\PPSSPP\PSP\SYSTEM\DUMP</code>
+<div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ppsspp-decrypted-eboot.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ppsspp-decrypted-eboot.png" /></a></div></div></p>
+<ul>
+<li>Rename <code>UCUS98612_WO_Game.BIN</code> to <code>WO_Game</code>, this is because ghidra-allegrex README says: <em>you must make sure the binary file name in Ghidra matches exactly the module name from PPSSPP</em></li>
+<li>Alternatively you can rename the imported file in Ghidra project window</li>
+</ul>
+</li>
+<li><p>Assuming Ghidra and ghidra-allegrex extension are already installed, and project is already created, import the <code>WO_Game</code>: File -&gt; Import File, or just drag and drop the file on Project window</p>
+<ul>
+<li>Format: PSP Executable (ELF)</li>
+<li>Language: Allegrex - all of these are set automatically if you installed ghidra-allegrex extension</li>
+<li>Program Name: make sure it&#39;s <code>WO_Game</code> in case you imported the file that doesn&#39;t have exactly that name</li>
+<li><strong>Important!</strong> Click <strong>Options...</strong> and change the Image Base from <code>0000000</code> to <code>8804000</code> so it matches the start of User memory region. If you don&#39;t do this - it will screw with the analysis later. Also note this is specifically <code>8804000</code> and not <code>8800000</code>, because you&#39;re analyzing the original executable file instead of whole PSP RAM dump, it&#39;s loaded exactly into <code>8804000</code></li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-import-file-ppsspp-eboot.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-import-file-ppsspp-eboot.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-import-file-base-ppsspp-eboot.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-import-file-base-ppsspp-eboot.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-active-project-ppsspp.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-active-project-ppsspp.png" /></a></div></div></p>
+<ol start="4">
+<li>Click on Bug icon which will open the Debugger</li>
+<li>Look around the debugger and seek Debugger targets window, if you accidentally close it, it can be brought back by following menu: Window -&gt; Debugger -&gt; Debugger Targets<ul>
+<li>Click on a connection icon at top right of Debugger targets window, then select PPSSPP WebSocket debugger (beta). This has to be done while game is running</li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-debugger-target-1.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-debugger-target-1.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-debugger-target-2.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-debugger-target-2.png" /></a></div></div></p>
+<ol start="6">
+<li>If everything was done correctly, in Dynamic window you should be able to navigate to memory contents and read disassembly the same way you&#39;d do it in PPSSPP. On screenshot below, I navigated to <code>0x0881c7e4</code> and pressed D to disassemble the code there, compare it to <a href="./ppsspp-debugger/ppsspp-debugger-1.png">output provided by PPSSPP</a></li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-debugger-1.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-debugger-1.png" /></a></div></div></p>
+<ol start="7">
+<li><p>If you had decrypted EBOOT.BIN imported to project with correct name (<code>WO_Game</code>), eventually you may be suggested to analyze it: click Yes. If this didn&#39;t happen - see the next step</p>
+</li>
+<li><p>If Debugger&#39;s window title doesn&#39;t mention WO_Game loaded, in the Objects window: click on Process -&gt; Modules, then double click WO_Game. If done right, <code>WO_Game</code> will be seen in Debugger&#39;s window title, and you may be suggested to analyze the file: click Yes. If you missed this dialog, you can revisit menu in the Debugger: Analysis -&gt; Auto Analyze</p>
+</li>
+<li><p>Default analyzer options should be good enough. Compared to PSX example, I wouldn&#39;t tick <strong>Aggressive Instruction Finder (Prototype)</strong> just because it takes awhile for it to work, and it could be ran afterwards if needed anyway. Click Analyze, you should notice the process going at bottom right of the CodeBrowser, wait until it&#39;s done.</p>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-1/ghidra-analyze.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-1/ghidra-analyze.png" /></a></div></div></p>
+<p>After analysis is finished, you can proceed to using debugger as you would in PPSSPP. You may need to bring out more windows like Memory viewer (open menu: Window -&gt; Debugger -&gt; New Memory View), rearrange and move existing windows, remove the ones you don&#39;t need.</p>
+<p>For now, let&#39;s set same kind of breakpoint that was done in PPSSPP previously: break-on-write of size 4 at <code>0x09592BA0</code></p>
+<ul>
+<li>Click on Memory view, then press G so you can enter the address to Go to: <code>0x9592BA0</code></li>
+<li>Right click on value at that address: Set Breakpoint -&gt; WRITE</li>
+<li>All data will be prefilled except for Length, which should be 4</li>
+</ul>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-debugger-2.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-debugger-2.png" /></a></div></div>
+<div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-debugger-3.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-debugger-3.png" /></a></div></div></p>
+<p>Just like before, unpausing the game and letting the score increase will make breakpoint activate. You&#39;ll have access to both disassembly of memory and original executable, with decompiled code that was already shown before. The buttons to step through the instructions can be found on toolbar above, just like in previously seen debuggers.</p>
+<p><div class="image"><div class="image__container"><a href="./ppsspp-decompiler-2/ghidra-debugger-4.png" target="_blank" rel="noopener"><img title="" src="./ppsspp-decompiler-2/ghidra-debugger-4.png" /></a></div></div></p>
+<h2 id="appendix"><strong>Appendix</strong><a href="#appendix" class="anchor-link"><span>¶</span></a></h2><h3 id="installing-ghidra"><strong>Installing Ghidra</strong><a href="#installing-ghidra" class="anchor-link"><span>¶</span></a></h3><p>Ghidra can aid you in decompiling and reverse engineering efforts when just using debugger and reading disassembly is not enough.</p>
+<p><a href="https://github.com/NationalSecurityAgency/ghidra#install">Ghidra&#39;s README itself has installation steps</a>. At the moment of writing this post, the latest version of Ghidra is 11.0, <strong>but you have to be aware that certain extension releases may not be compatible</strong>, so pay attention to version numbers when downloading an extension release.</p>
+<p><a href="https://htmlpreview.github.io/?https://github.com/NationalSecurityAgency/ghidra/blob/Ghidra_10.4_build/GhidraDocs/InstallationGuide.html">There&#39;s also bigger installation guide available</a> (linked for version 10.4).</p>
+<p>I will paraphrase installation steps:</p>
+<ol>
+<li>Install <a href="https://adoptium.net/temurin/releases/">JDK 17 64-bit</a><ul>
+<li><strong>Exactly version 17</strong>. Ghidra docs say: <em>Ghidra requires Java 17 JDK to run. A newer version of Java may be acceptable but has not been fully tested.</em></li>
+<li>I also noted that the link leads to Eclipse Temurin which I never heard of. It says it&#39;s <em>&quot;open source Java SE build based upon OpenJDK&quot;</em>, which shouldn&#39;t be a big deal, but I was previously used to installing <a href="https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html">JDK from Oracle website</a></li>
+</ul>
+</li>
+</ol>
+<p><div class="image"><div class="image__container"><a href="./ghidra/jdk17pick.png" target="_blank" rel="noopener"><img title="I use Windows, so here&apos;s my choice" src="./ghidra/jdk17pick.png" /></a><h4 class="image__title">I use Windows, so here&apos;s my choice</h4></div></div></p>
+<ol start="2">
+<li><p><a href="https://github.com/NationalSecurityAgency/ghidra/releases">Download Ghidra release with version of your choice</a>, I will be using <a href="https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.4_build/ghidra_10.4_PUBLIC_20230928.zip">10.4</a>, extract it to some directory. On Windows traditionally it&#39;s recommended to not have whitespace in your directory paths and to avoid extracting to System directories and Program Files</p>
+</li>
+<li><p>You can now launch Ghidra via <code>ghidraRun.bat</code>, check that it works</p>
+</li>
+</ol>
+<h3 id="installing-ghidra-extensions"><strong>Installing Ghidra Extensions</strong><a href="#installing-ghidra-extensions" class="anchor-link"><span>¶</span></a></h3><ol>
+<li>Run Ghidra, then in project selection window that appears: File -&gt; Install Extensions</li>
+<li>Click on the + button on top right corner: Add extension</li>
+<li>Select the zip file with the extension</li>
+<li>Have the extension ticked, close the Extensions window, restart Ghidra</li>
+</ol>
+<p><a href="https://htmlpreview.github.io/?https://github.com/NationalSecurityAgency/ghidra/blob/Ghidra_10.4_build/GhidraDocs/InstallationGuide.html#Extensions">Paraphrased in official docs</a></p>
+<p><div class="image"><div class="image__container"><a href="./ghidra/ghidra-add-extension.png" target="_blank" rel="noopener"><img title="" src="./ghidra/ghidra-add-extension.png" /></a></div></div></p>
+<h3 id="using-pcsx2-with-raintegration"><strong>Using PCSX2 with RAIntegration</strong><a href="#using-pcsx2-with-raintegration" class="anchor-link"><span>¶</span></a></h3><p>Drop <strong>RA_Integration.dll</strong> into PCSX2 directory so you can use it to track down values, alternatively <a href="#using-pcsx2-with-cheat-engine">you can use Cheat Engine</a></p>
+<ul>
+<li>Unfortunately there&#39;s no direct easy way to get RAIntegration, you either get it as part of <a href="https://retroachievements.org/bin/RALibretro-x64.zip">RALibRetro</a>, or in RetroAchievements Discord server if you&#39;re a developer</li>
+<li>The PCSX2 has to be run with <code>-raintegration</code> command line parameter. On Windows it&#39;s easiest done by creating a shortcut and editing it:</li>
+</ul>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-raintegration-shortcut.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-raintegration-shortcut.png" /></a></div></div></p>
+<ul>
+<li>You will be prompted to login after launching PCSX2, RAIntegration can be accessed through menu: Tools -&gt; RAIntegration</li>
+</ul>
+<h3 id="using-pcsx2-with-cheat-engine"><strong>Using PCSX2 with Cheat Engine</strong><a href="#using-pcsx2-with-cheat-engine" class="anchor-link"><span>¶</span></a></h3><p>Cheat Engine can be used as alternate way to search for values in memory and change or freeze those values. It&#39;s Memory Viewer is also quite nice.</p>
+<p>One of the mistakes people do with Cheat Engine is searching entire PCSX2 process memory instead of the dedicated region that holds 32 MB of PS2 RAM, so that will be taken care of.</p>
+<p>After attaching to PCSX2 process, all you have to do is specify <code>[EEMem]</code> and <code>[EEMem]+2000000</code> as Memory Region Start and Stop, then do your memory searches as usual. <code>[EEMem]</code> will dereference a pointer that leads to start of PS2 Memory Region, <code>2000000</code> represent 32MB written in hexadecimal. You can actually check where that pointer leads by specifying <code>EEMem</code> as 8 Bytes address in the table below, the pointer happens to contain address of <code>0x00007FF710000000</code>. Such amount of zeroes at the end makes it easy to read and copy the found addresses without any translation.</p>
+<p>The screenshot already includes same two values that were mentioned in <a href="#chained-pointer-ps2-game-pcsx2-case-1">GT4 Prologue example</a>, notice how trailing 7 digits of those addresses match the original findings.</p>
+<details class="spoiler spoiler_question"><summary class="spoiler__header" id="where-did-eemem-thing-come-from"><a href="#where-did-eemem-thing-come-from"><div class="spoiler__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="currentColor" d="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zM262.7 90c-54.5 0-89.3 23-116.5 63.8-3.5 5.3-2.4 12.4 2.7 16.3l34.7 26.3c5.2 3.9 12.6 3 16.7-2.1 17.9-22.7 30.1-35.8 57.3-35.8 20.4 0 45.7 13.1 45.7 33 0 15-12.4 22.7-32.5 34C247.1 238.5 216 254.9 216 296v4c0 6.6 5.4 12 12 12h56c6.6 0 12-5.4 12-12v-1.3c0-28.5 83.2-29.6 83.2-106.7 0-58-60.2-102-116.5-102zM256 338c-25.4 0-46 20.6-46 46 0 25.4 20.6 46 46 46s46-20.6 46-46c0-25.4-20.6-46-46-46z"/></svg></div></a><strong>Question:</strong> Where did EEMem thing come from?</summary><section><p><p>If you open <code>pcsx2-qt.exe</code> using <a href="https://github.com/horsicq/Detect-It-Easy">Detect It Easy</a> and check the Exports, you&#39;ll find the <strong>EEMem</strong> in there.</p>
+<p>So all Cheat Engine does is looking up that export and following it to reach the memory region to deal with.</p>
+<p>I don&#39;t know how much wit one needs to attempt to check Export list, I personally found out about this by other person sharing this &quot;secret&quot;.</p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-ee-mem-export.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-ee-mem-export.png" /></a></div></div></p>
+</p></section></details><p><div class="image"><div class="image__container"><a href="./pcsx2-cheat-engine.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-cheat-engine.png" /></a></div></div></p>
+<h3 id="dumping-pcsx2-memory-with-save-states"><strong>Dumping PCSX2 memory with save states</strong><a href="#dumping-pcsx2-memory-with-save-states" class="anchor-link"><span>¶</span></a></h3><p>32 MB of PS2 RAM are part of PCSX2 save states, and those save states are actually just archive files, so the goal would be to extract them. Problem is, by default PCSX2 uses zstd compression and there&#39;s chance that your archiving software does not support it.</p>
+<p>I highly suggest you setup <a href="https://github.com/mcmilk/7-Zip-zstd/releases">7Zip-ZS</a> - it&#39;s usual 7Zip but with zstd support built-in.</p>
+<p>You can open the <code>.p2s</code> afterwards. I have to do it by right clicking the file: 7-Zip ZS -&gt; Open Archive, or by opening the file from within 7-Zip ZS File Manager.</p>
+<p>The file you need to extract is <code>eeMemory.bin</code>.</p>
+<p><div class="image"><div class="image__container"><a href="./7zip-zs-pcsx2.png" target="_blank" rel="noopener"><img title="" src="./7zip-zs-pcsx2.png" /></a></div></div></p>
+<p><strong>Alternatively</strong>, you can open <code>inis/PCSX2.ini</code> in your PCSX2 installation directory, and edit:</p>
+<p><code>SavestateZstdCompression = false</code></p>
+<p>This will allow to open the <code>.p2s</code> with most of the regular archiving software, but at the cost of savestates being made much slower.</p>
+<h3 id="dumping-pcsx2-memory-with-cheat-engine"><strong>Dumping PCSX2 memory with Cheat Engine</strong><a href="#dumping-pcsx2-memory-with-cheat-engine" class="anchor-link"><span>¶</span></a></h3><p>With Cheat Engine attached to <code>pcsx2-qt.exe</code>, open the Memory View, then go to menu: File -&gt; Save Memory Region</p>
+<p>Specify <strong>From:</strong> <code>[EEMem]</code>, <strong>To:</strong> <code>[EEMem]+2000000</code>, then Add that as memory region to save. <strong>Make sure <em>Don&#39;t include Cheat Engine header in file</em> is checked.</strong></p>
+<p>Clicking the Save file will open the file save dialog, name and save the file where you&#39;d like it.</p>
+<p>If you&#39;re interested about EEMem thing, check <a href="#where-did-eemem-thing-come-from">Where did EEMem thing come from?</a></p>
+<p><div class="image"><div class="image__container"><a href="./pcsx2-cheat-engine-dump.png" target="_blank" rel="noopener"><img title="" src="./pcsx2-cheat-engine-dump.png" /></a></div></div></p>
+<h3 id="additional-resources"><strong>Additional resources</strong><a href="#additional-resources" class="anchor-link"><span>¶</span></a></h3><p><a href="https://slymods.info/wiki/Guide:Finding_pointers_and_offsets"><strong>Finding pointers and offsets - SlyWiki</strong></a> - extremely concise version of methods described here, including <a href="#combine-debugger-efforts-with-constant-search-of-found-pointers">Memory Searching the found pointers</a>, has oldschool PCSX2</p>
+<p><a href="https://tetracorp.github.io/tokimeki-memorial/"><strong>Exploring Tokimeki Memorial, a reverse-engineering project</strong></a> - see Analysis methods section</p>
+<p><a href="https://www.youtube.com/watch?v=gG5N53aNikk"><strong>PS2 game hacking &amp; reverse engineering</strong></a> - funky video, also goes over PS2 MIPS specifics</p>
+<p><a href="https://commons.wikimedia.org/wiki/File:Emotion_Engine_%26_Graphics_Synthesizer_%287583178660%29.jpg"><strong>ee.jpg</strong></a> - taken from WikiMedia for a thumbnail, by Dilshan Jayakody</p>
+<p><em>Would appreciate if you can suggest to add more resources here, in english</em></p>
+</div></main>
+    
+  </body>
+</html>
