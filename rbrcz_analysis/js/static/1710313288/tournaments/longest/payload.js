@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/tournaments/longest", {data:[{}],fetch:{},mutations:void 0});

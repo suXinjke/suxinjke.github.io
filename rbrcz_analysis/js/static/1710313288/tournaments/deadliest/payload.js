@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/tournaments/deadliest", {data:[{}],fetch:{},mutations:void 0});

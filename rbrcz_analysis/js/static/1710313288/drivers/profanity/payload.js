@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/drivers/profanity", {data:[{}],fetch:{},mutations:void 0});
